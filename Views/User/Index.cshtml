@@ -1,0 +1,85 @@
+@{
+    ViewData["Title"] = "Acceso a Trivia";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold text-primary">🎮 BAC Trivia</h2>
+                        <p class="text-muted">Inicia sesión o regístrate para jugar</p>
+                    </div>
+
+                    <!-- Mensajes de Alerta -->
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <!-- Pestañas de Navegación (Login / Register) -->
+                    <ul class="nav nav-pills nav-justified mb-4" id="authTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active rounded-pill" id="login-tab" data-bs-toggle="pill" data-bs-target="#login-content" type="button" role="tab">Iniciar Sesión</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-pill" id="register-tab" data-bs-toggle="pill" data-bs-target="#register-content" type="button" role="tab">Registrarse</button>
+                        </li>
+                    </ul>
+
+                    <!-- Contenido de las Pestañas -->
+                    <div class="tab-content" id="authTabContent">
+                        
+                        <!-- TAB LOGIN -->
+                        <div class="tab-pane fade show active" id="login-content" role="tabpanel">
+                            @if (TempData["LoginError"] != null)
+                            {
+                                <div class="alert alert-danger py-2">@TempData["LoginError"]</div>
+                            }
+
+                            <form asp-action="Login" asp-controller="User" method="post">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Usuario</label>
+                                    <input type="text" name="loginUsername" class="form-control" required autocomplete="username" placeholder="Ingresa tu usuario" />
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Contraseña</label>
+                                    <input type="password" name="loginPassword" class="form-control" required autocomplete="current-password" placeholder="••••••••" />
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 py-2 rounded-pill shadow-sm">Entrar a Jugar</button>
+                            </form>
+                        </div>
+
+                        <!-- TAB REGISTER -->
+                        <div class="tab-pane fade" id="register-content" role="tabpanel">
+                            @if (TempData["RegisterError"] != null)
+                            {
+                                <div class="alert alert-danger py-2">@TempData["RegisterError"]</div>
+                            }
+
+                            <form asp-action="Register" asp-controller="User" method="post">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Nuevo Usuario</label>
+                                    <input type="text" name="regUsername" class="form-control" required autocomplete="username" placeholder="Elige un usuario único" />
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Contraseña</label>
+                                    <input type="password" name="regPassword" class="form-control" required autocomplete="new-password" placeholder="Crea una contraseña segura" />
+                                </div>
+                                <button type="submit" class="btn btn-success w-100 py-2 rounded-pill shadow-sm">Crear Cuenta</button>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

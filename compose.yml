@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # Servicio 1: Base de Datos SQL Server
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver_trivia
+    environment:
+      - ACCEPT_EULA=${ACCEPT_EULA}
+      - SA_PASSWORD=${SA_PASSWORD}
+    ports:
+      - "${MSSQL_PORT}:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    networks:
+      - trivia-net
+
+  # Servicio 2: Tu Aplicaciion
+  trivia-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trivia_app
+    environment:
+      - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
+      - JwtSettings__Secret=${JWT_SECRET}
+      - JwtSettings__Issuer=${JWT_ISSUER}
+      - JwtSettings__Audience=${JWT_AUDIENCE}
+      - JwtSettings__ExpireMinutes=${JWT_EXPIRE_MINUTES}
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "${APP_PORT}:8080"
+    depends_on:
+      - sqlserver
+    networks:
+      - trivia-net
+
+volumes:
+  mssql_data:
+
+networks:
+  trivia-net:
+    driver: bridge
