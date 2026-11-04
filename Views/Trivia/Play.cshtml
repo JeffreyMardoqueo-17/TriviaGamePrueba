@@ -1,0 +1,182 @@
+@model IEnumerable<TriviaPruebaTecnica.Models.Question>
+@using System.Text.Json
+
+@{
+    ViewData["Title"] = "Jugando Trivia";
+    var questionsJson = JsonSerializer.Serialize(Model);
+    int categoryId = Model.FirstOrDefault()?.CategoryId ?? 1;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow border-0 p-4" id="game-card">
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span id="question-counter" class="fw-bold text-muted fs-5">Pregunta 1 de 3</span>
+                    <span id="timer-badge" class="badge bg-danger fs-5 p-2">⏳ 60s</span>
+                </div>
+
+                <div id="question-container">
+                    <h4 id="question-text" class="fw-bold mb-4 text-primary"></h4>
+                    <div id="answers-container" class="d-grid gap-3"></div>
+                </div>
+
+                <div id="feedback-container" class="mt-4 text-center fw-bold fs-4"></div>
+
+                <div id="result-container" class="text-center d-none py-4">
+                    <h2 class="text-success mb-3 fw-bold">🎉 ¡Partida Finalizada!</h2>
+                    <p class="fs-4">Has obtenido <span id="final-score" class="text-primary fw-bold"></span> puntos.</p>
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <a href="@Url.Action("Index", "Trivia")" class="btn btn-dark btn-lg rounded-pill px-4">Elegir Categoría</a>
+                        <a href="@Url.Action("Leaderboard", "Trivia")" class="btn btn-success btn-lg rounded-pill px-4">Ver Ranking</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const questions = @Html.Raw(questionsJson);
+        const categoryId = @categoryId;
+        let currentIndex = 0;
+        let score = 0;
+        let correctCount = 0;
+        let timer = null;
+        let timeLeft = 60;
+
+        function startGame() {
+            currentIndex = 0;
+            score = 0;
+            correctCount = 0;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentIndex >= questions.length) {
+                endGame();
+                return;
+            }
+
+            clearInterval(timer);
+            timeLeft = 60;
+            updateTimerDisplay();
+            startTimer();
+
+            const q = questions[currentIndex];
+            document.getElementById('question-counter').innerText = `Pregunta ${currentIndex + 1} de ${questions.length}`;
+            document.getElementById('question-text').innerText = q.QuestionText;
+
+            const answersDiv = document.getElementById('answers-container');
+            answersDiv.innerHTML = '';
+            document.getElementById('feedback-container').innerText = '';
+
+            q.Answers.forEach(ans => {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-outline-primary text-start p-3 fs-5 rounded-pill shadow-sm';
+                btn.innerText = ans.AnswerText;
+                btn.onclick = () => selectAnswer(ans.IsCorrect, btn, q.Answers);
+                answersDiv.appendChild(btn);
+            });
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const badge = document.getElementById('timer-badge');
+            badge.innerText = `⏳ ${timeLeft}s`;
+            badge.className = timeLeft <= 10 ? 'badge bg-warning text-dark fs-5 p-2' : 'badge bg-danger fs-5 p-2';
+        }
+
+        function selectAnswer(isCorrect, selectedBtn, allAnswers) {
+            clearInterval(timer);
+            const feedback = document.getElementById('feedback-container');
+            const buttons = document.getElementById('answers-container').getElementsByTagName('button');
+            
+            for (let b of buttons) b.disabled = true;
+
+            if (isCorrect) {
+                selectedBtn.classList.remove('btn-outline-primary');
+                selectedBtn.classList.add('btn-success', 'text-white');
+                feedback.innerText = '✅ ¡Respuesta Correcta!';
+                feedback.className = 'mt-4 text-center fw-bold fs-4 text-success';
+                score += 10;
+                correctCount++;
+            } else {
+                selectedBtn.classList.remove('btn-outline-primary');
+                selectedBtn.classList.add('btn-danger', 'text-white');
+                feedback.innerText = '❌ Respuesta Incorrecta';
+                feedback.className = 'mt-4 text-center fw-bold fs-4 text-danger';
+
+                for (let i = 0; i < buttons.length; i++) {
+                    if (allAnswers[i].IsCorrect) {
+                        buttons[i].classList.remove('btn-outline-primary');
+                        buttons[i].classList.add('btn-success', 'text-white');
+                    }
+                }
+            }
+
+            setTimeout(() => {
+                currentIndex++;
+                showQuestion();
+            }, 1800);
+        }
+
+        function handleTimeOut() {
+            const feedback = document.getElementById('feedback-container');
+            feedback.innerText = '⏰ ¡Se acabó el tiempo!';
+            feedback.className = 'mt-4 text-center fw-bold fs-4 text-warning';
+
+            const buttons = document.getElementById('answers-container').getElementsByTagName('button');
+            const q = questions[currentIndex];
+            
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].disabled = true;
+                if (q.Answers[i].IsCorrect) {
+                    buttons[i].classList.remove('btn-outline-primary');
+                    buttons[i].classList.add('btn-success', 'text-white');
+                }
+            }
+
+            setTimeout(() => {
+                currentIndex++;
+                showQuestion();
+            }, 1800);
+        }
+
+        function endGame() {
+            document.getElementById('question-container').classList.add('d-none');
+            document.getElementById('timer-badge').classList.add('d-none');
+            document.getElementById('question-counter').classList.add('d-none');
+            document.getElementById('feedback-container').classList.add('d-none');
+
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('result-container').classList.remove('d-none');
+
+            // Guardar puntaje de forma asíncrona en el servidor
+            fetch('/Trivia/SaveResult', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    categoryId: categoryId,
+                    pointsEarned: score,
+                    correctAnswersCount: correctCount
+                })
+            }).catch(err => console.error("Error al guardar puntuación:", err));
+        }
+
+        startGame();
+    </script>
+}

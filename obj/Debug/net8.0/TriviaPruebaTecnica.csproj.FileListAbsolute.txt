@@ -1,0 +1,10 @@
+C:\Users\Admin\Documents\PruebasTecnicas\TriviaPruebaTecnica\obj\Debug\net8.0\TriviaPruebaTecnica.csproj.AssemblyReference.cache
+C:\Users\Admin\Documents\PruebasTecnicas\TriviaPruebaTecnica\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\Admin\Documents\PruebasTecnicas\TriviaPruebaTecnica\obj\Debug\net8.0\TriviaPruebaTecnica.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Admin\Documents\PruebasTecnicas\TriviaPruebaTecnica\obj\Debug\net8.0\TriviaPruebaTecnica.AssemblyInfoInputs.cache
+C:\Users\Admin\Documents\PruebasTecnicas\TriviaPruebaTecnica\obj\Debug\net8.0\TriviaPruebaTecnica.AssemblyInfo.cs
+C:\Users\Admin\Documents\PruebasTecnicas\TriviaPruebaTecnica\obj\Debug\net8.0\TriviaPruebaTecnica.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Documents\PruebasTecnicas\TriviaPruebaTecnica\obj\Debug\net8.0\TriviaPruebaTecnica.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Admin\Documents\PruebasTecnicas\TriviaPruebaTecnica\obj\Debug\net8.0\TriviaPruebaTecnica.RazorAssemblyInfo.cache
+C:\Users\Admin\Documents\PruebasTecnicas\TriviaPruebaTecnica\obj\Debug\net8.0\TriviaPruebaTecnica.RazorAssemblyInfo.cs
+C:\Users\Admin\Documents\PruebasTecnicas\TriviaPruebaTecnica\obj\Debug\net8.0\TriviaPruebaTecnica.sourcelink.json

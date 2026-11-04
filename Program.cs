@@ -19,10 +19,12 @@ builder.Services.AddScoped<IDbConnection>(_ => new SqlConnection(connectionStrin
 
 // 3. Registrar Repositorios
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITriviaRepository, TriviaRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IPasswordHasher, PasswordHasher>(); 
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<ITriviaService, TriviaService>();
 
 // 4. Configurar autenticaion por Cookies Seguras
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

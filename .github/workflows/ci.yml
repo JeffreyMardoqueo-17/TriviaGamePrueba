@@ -1,0 +1,32 @@
+name: CI/CD Pipeline - Trivia BAC
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-test-docker:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Clonar Repositorio
+      uses: actions/checkout@v4
+
+    - name: ⚙️ Configurar Entorno .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: 📦 Restaurar Dependencias
+      run: dotnet restore
+
+    - name: 🔨 Compilar Proyecto
+      run: dotnet build --no-restore --configuration Release
+
+    - name: 🧪 Ejecutar Pruebas Unitarias
+      run: dotnet test --no-build --configuration Release --verbosity normal
+
+    - name: 🐳 Validar Construcción de Docker Image
+      run: docker build -t trivia-app:latest .
