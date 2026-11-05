@@ -26,7 +26,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# Forzar explícitamente el puerto interno a 8181 para evitar conflictos con el puerto 8080 por defecto
+# Forzar el puerto interno a 8181 para evitar conflictos con el puerto 8080 por defecto
 ENV ASPNETCORE_URLS=http://+:8181
 
 ENTRYPOINT ["dotnet", "TriviaPruebaTecnica.dll"]

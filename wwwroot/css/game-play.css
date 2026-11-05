@@ -58,13 +58,11 @@ body {
     font-weight: 700;
 }
 
-/* Caja de puntuación final */
 .score-display-box {
     border: 2px dashed #cbd5e1;
     background-color: #f8fafc !important;
 }
 
-/* Botones de acción final */
 .btn-play-action {
     border-radius: 50rem !important;
     padding-left: 2rem;
@@ -76,8 +74,6 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 0.5rem 1rem rgba(15, 23, 42, 0.12);
 }
-
-/* Animación sutil de pulso para el temporizador crítico */
 @keyframes pulse-soft {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
