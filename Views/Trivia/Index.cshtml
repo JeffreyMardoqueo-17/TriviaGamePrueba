@@ -1,0 +1,38 @@
+@model IEnumerable<TriviaPruebaTecnica.Models.Category>
+
+@{
+    ViewData["Title"] = "Seleccionar Categoría - Trivia";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h2 class="fw-bold mb-4">¡Bienvenido a la Trivia!</h2>
+            <p class="text-muted mb-4">Selecciona una categoría para comenzar el desafío:</p>
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">@TempData["Error"]</div>
+            }
+
+            <div class="row g-4 justify-content-center">
+                @foreach (var category in Model)
+                {
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm border-0 bg-light">
+                            <div class="card-body d-flex flex-column justify-content-between text-center p-4">
+                                <div>
+                                    <h4 class="card-title fw-bold text-primary">@category.Name</h4>
+                                    <p class="card-text text-muted small">@category.Description</p>
+                                </div>
+                                <a asp-action="Play" asp-route-categoryId="@category.Id" class="btn btn-dark w-100 mt-3 rounded-pill">
+                                    Jugar Ahora 
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

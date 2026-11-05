@@ -10,19 +10,21 @@ using TriviaPruebaTecnica.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Agregar servicios MVC
 builder.Services.AddControllersWithViews();
 
-// 2. Registrar conexion a SQL Server
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddScoped<IDbConnection>(_ => new SqlConnection(connectionString));
 
-// 3. Registrar Repositorios
+builder.Services.AddMemoryCache();
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITriviaRepository, TriviaRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IPasswordHasher, PasswordHasher>(); 
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<ITriviaService, TriviaService>();
+
 
 // 4. Configurar autenticaion por Cookies Seguras
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -32,10 +34,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LogoutPath = "/User/Logout";
         options.ExpireTimeSpan = TimeSpan.FromHours(1);
         options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Cookie.SameSite = SameSiteMode.Strict;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.Cookie.SameSite = SameSiteMode.Lax;
     });
-
+    
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

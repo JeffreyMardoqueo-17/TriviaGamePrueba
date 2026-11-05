@@ -48,5 +48,20 @@ namespace TriviaPruebaTecnica.Repository
 
             return user;
         }
+
+        //validacion si existe 
+        public async Task<bool> ExistsAsync(string username)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@Username", username);
+
+            var exists = await _dbConnection.ExecuteScalarAsync<bool>(
+                "sp_ExistUser",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            return exists;
+        }
     }
 }

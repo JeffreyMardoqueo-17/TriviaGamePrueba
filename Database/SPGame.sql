@@ -1,4 +1,4 @@
----traer las categorias
+-- 1. Traer Categorías
 CREATE OR ALTER PROCEDURE sp_GetCategories
 AS
 BEGIN
@@ -9,7 +9,6 @@ BEGIN
 END;
 GO
 
----Obtener 3 Preguntas aleatorias y sus respueestas por categoria, basicamente aca esta el corazon del juego
 CREATE OR ALTER PROCEDURE sp_GetRandomQuestionsByCategory
     @CategoryId INT
 AS
@@ -41,5 +40,67 @@ BEGIN
 
     -- Limpiar la tabla temporal
     DROP TABLE #RandomQuestions;
+END;
+GO
+
+-- 3. Guardar Resultado de Partida y Actualizar Puntuación (Upsert Transaccional)
+CREATE OR ALTER PROCEDURE sp_SaveGameResult
+    @UserId INT,
+    @CategoryId INT,
+    @PointsEarned INT,
+    @CorrectAnswersCount INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    BEGIN TRANSACTION;
+
+    BEGIN TRY
+        -- Registrar la partida en el historial
+        INSERT INTO GameHistory (UserId, CategoryId, PointsEarned, CorrectAnswersCount)
+        VALUES (@UserId, @CategoryId, @PointsEarned, @CorrectAnswersCount);
+
+        -- Actualizar o insertar el acumulado en UserScores
+        IF EXISTS (SELECT 1 FROM UserScores WHERE UserId = @UserId)
+        BEGIN
+            UPDATE UserScores
+            SET TotalPoints = TotalPoints + @PointsEarned,
+                GamesPlayed = GamesPlayed + 1,
+                CorrectAnswers = CorrectAnswers + @CorrectAnswersCount,
+                UpdatedAt = SYSDATETIME()
+            WHERE UserId = @UserId;
+        END
+        ELSE
+        BEGIN
+            INSERT INTO UserScores (UserId, TotalPoints, GamesPlayed, CorrectAnswers, UpdatedAt)
+            VALUES (@UserId, @PointsEarned, 1, @CorrectAnswersCount, SYSDATETIME());
+        END
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+--(Ranking)
+CREATE OR ALTER PROCEDURE sp_GetLeaderboard
+    @TopCount INT = 10
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT TOP (@TopCount)
+        ROW_NUMBER() OVER (ORDER BY us.TotalPoints DESC, us.UpdatedAt ASC) AS RankPosition,
+        u.Id AS UserId,
+        u.Username,
+        us.TotalPoints,
+        us.GamesPlayed,
+        us.CorrectAnswers
+    FROM UserScores us
+    INNER JOIN Users u ON us.UserId = u.Id
+    ORDER BY us.TotalPoints DESC, us.UpdatedAt ASC;
 END;
 GO
