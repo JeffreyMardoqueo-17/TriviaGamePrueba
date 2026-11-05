@@ -16,14 +16,14 @@
             <!-- Tarjeta principal de juego limpia y elegante -->
             <div class="card game-card border-0 p-4 p-md-5 bg-white shadow-lg" id="game-card">
                 
-                <!-- Barra superior: Contador de pregunta y Temporizador Circular/Dinámico -->
+                <!-- Barra superior: Contador de pregunta y Temporizador -->
                 <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
                     <div class="d-flex align-items-center gap-2">
                         <span class="game-badge-step">🎮</span>
                         <span id="question-counter" class="fw-bold text-secondary fs-6 text-uppercase tracking-wider">Pregunta 1 de 3</span>
                     </div>
                     <div id="timer-badge" class="timer-pill d-flex align-items-center gap-2 px-3 py-2 rounded-pill fw-bold text-danger bg-danger-subtle">
-                        ⏳ <span id="timer-text">60s</span>
+                        ⏳ <span id="timer-text">30s</span>
                     </div>
                 </div>
 
@@ -66,7 +66,25 @@
         let score = 0;
         let correctCount = 0;
         let timer = null;
-        let timeLeft = 60;
+        let timeLeft = 30; // 30 segundos por pregunta
+
+        // Carga de efectos de sonido desde wwwroot/audio/
+        const soundCorrect = new Audio('/audio/correcto.wav');
+        const soundIncorrect = new Audio('/audio/incorrecto.wav');
+        const soundTick = new Audio('/audio/tictac.wav');
+        
+        // Configuramos el tictac para que se repita en bucle automáticamente
+        soundTick.loop = true;
+
+        function playSound(audioObj) {
+            audioObj.currentTime = 0;
+            audioObj.play().catch(e => console.log("Reproducción de audio bloqueada o archivo faltante:", e));
+        }
+
+        function stopSound(audioObj) {
+            audioObj.pause();
+            audioObj.currentTime = 0;
+        }
 
         function startGame() {
             currentIndex = 0;
@@ -82,7 +100,9 @@
             }
 
             clearInterval(timer);
-            timeLeft = 60;
+            stopSound(soundTick); // Aseguramos detener cualquier tictac anterior
+
+            timeLeft = 30;
             updateTimerDisplay();
             startTimer();
 
@@ -104,11 +124,16 @@
         }
 
         function startTimer() {
+            // Iniciamos el sonido del tictac en bucle para toda la duración de la pregunta
+            playSound(soundTick);
+
             timer = setInterval(() => {
                 timeLeft--;
                 updateTimerDisplay();
+
                 if (timeLeft <= 0) {
                     clearInterval(timer);
+                    stopSound(soundTick); // Detenemos el tictac al acabarse el tiempo
                     handleTimeOut();
                 }
             }, 1000);
@@ -128,6 +153,8 @@
 
         function selectAnswer(isCorrect, selectedBtn, allAnswers) {
             clearInterval(timer);
+            stopSound(soundTick); // se detiene cuando el usaurio respondr
+
             const feedback = document.getElementById('feedback-container');
             const buttons = document.getElementById('answers-container').getElementsByTagName('button');
             
@@ -139,10 +166,12 @@
                 feedback.className = 'mt-3 text-center fw-bold fs-5 text-success animate-fade-in';
                 score += 10;
                 correctCount++;
+                playSound(soundCorrect);
             } else {
                 selectedBtn.classList.add('answer-incorrect');
                 feedback.innerText = '❌ Respuesta Incorrecta';
                 feedback.className = 'mt-3 text-center fw-bold fs-5 text-danger animate-fade-in';
+                playSound(soundIncorrect);
 
                 for (let i = 0; i < buttons.length; i++) {
                     if (allAnswers[i].IsCorrect) {
@@ -158,6 +187,9 @@
         }
 
         function handleTimeOut() {
+            stopSound(soundTick);
+            playSound(soundIncorrect);
+            
             const feedback = document.getElementById('feedback-container');
             feedback.innerText = '⏰ ¡Se acabó el tiempo!';
             feedback.className = 'mt-3 text-center fw-bold fs-5 text-warning animate-fade-in';
@@ -179,6 +211,7 @@
         }
 
         function endGame() {
+            stopSound(soundTick);
             document.getElementById('question-container').classList.add('d-none');
             document.getElementById('timer-badge').classList.add('d-none');
             document.getElementById('question-counter').classList.add('d-none');
