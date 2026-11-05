@@ -68,8 +68,7 @@ namespace TriviaPruebaTecnica.Controllers
             }
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+      [HttpPost]
         public async Task<IActionResult> SaveResult([FromBody] GameResultDto? dto)
         {
             if (dto == null)
