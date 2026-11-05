@@ -12,5 +12,6 @@ namespace TriviaPruebaTecnica.Repository.Interfaces
         Task<IEnumerable<Question>> GetRandomQuestionsByCategoryAsync(int categoryId);
         Task SaveGameResultAsync(int userId, int categoryId, int pointsEarned, int correctAnswersCount);
         Task<IEnumerable<LeaderboardEntry>> GetLeaderboardAsync(int topCount = 10);
+        
     }
 }

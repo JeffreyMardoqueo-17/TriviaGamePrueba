@@ -55,6 +55,30 @@ BEGIN
     WHERE Username = @Username;
 END;
 GO
+--
+CREATE OR ALTER PROCEDURE sp_ExistUser
+    @Username NVARCHAR(50)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF LTRIM(RTRIM(@Username)) = ''
+    BEGIN
+        RAISERROR('El nombre de usuario no puede estar vacío.', 16, 1);
+        RETURN;
+    END
+
+    -- Retorna 1 si existe, 0 si no existe (muy eficiente con IF EXISTS)
+    IF EXISTS (SELECT 1 FROM Users WHERE Username = @Username)
+    BEGIN
+        SELECT CAST(1 AS BIT) AS UserExists;
+    END
+    ELSE
+    BEGIN
+        SELECT CAST(0 AS BIT) AS UserExists;
+    END
+END;
+GO
 
 --PRUEBA
 DECLARE @TestUsername NVARCHAR (50) = 'jeffreymardoqueo';

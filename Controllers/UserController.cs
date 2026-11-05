@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TriviaPruebaTecnica.Service.Interfaces;
@@ -19,20 +20,15 @@ namespace TriviaPruebaTecnica.Controllers
             _logger = logger;
         }
 
-        // GET: /User o /User/Index (Muestra la vista unificada de Login y Registro)
         [HttpGet]
         public IActionResult Index()
         {
-            // Si el usuario ya está autenticado, lo mandamos directo al juego
-            if (User.Identity != null && User.Identity.IsAuthenticated)
-            {
+            if (User?.Identity?.IsAuthenticated == true)
                 return RedirectToAction("Index", "Trivia");
-            }
 
             return View();
         }
 
-        // POST: /User/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(string regUsername, string regPassword)
@@ -45,15 +41,15 @@ namespace TriviaPruebaTecnica.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            TempData["SuccessMessage"] = "¡Registro exitoso! Ya puedes iniciar sesión.";
+            TempData["SuccessMessage"] = message;
             return RedirectToAction(nameof(Index));
         }
 
-        // POST: /User/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string loginUsername, string loginPassword)
         {
+            // Toda la lógica de autenticación y verificación reside en el servicio
             var (success, message, user) = await _userService.AuthenticateAsync(loginUsername, loginPassword);
 
             if (!success || user == null)
@@ -62,7 +58,6 @@ namespace TriviaPruebaTecnica.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Crear los Claims de identidad para la Cookie segura
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -72,18 +67,22 @@ namespace TriviaPruebaTecnica.Controllers
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
 
-            // Emitir la Cookie cifrada HttpOnly
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = System.DateTimeOffset.UtcNow.AddHours(8)
+            };
 
-            _logger.LogInformation("Usuario {Username} ha iniciado sesión exitosamente.", user.Username);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
 
-            // Redirigir al controlador de Trivia (el juego)
+            _logger.LogInformation("Usuario {Username} inició sesión correctamente.", user.Username);
+
             return RedirectToAction("Index", "Trivia");
         }
 
-        // POST: /User/Logout
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

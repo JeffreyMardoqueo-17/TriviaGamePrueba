@@ -12,8 +12,6 @@ namespace TriviaPruebaTecnica.Controllers
         {
             _logger = logger;
         }
-
-        // Si entran a la raíz '/', puedes redirigirlos directamente al Login de User o a Trivia
         public IActionResult Index()
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)

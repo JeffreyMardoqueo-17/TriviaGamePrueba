@@ -1,6 +1,9 @@
+using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 using Dapper;
-using Microsoft.Data.SqlClient;
 using TriviaPruebaTecnica.Models;
 using TriviaPruebaTecnica.Repository.Interfaces;
 
@@ -8,18 +11,17 @@ namespace TriviaPruebaTecnica.Repository
 {
     public class TriviaRepository : ITriviaRepository
     {
-        private readonly string _connectionString;
+        private readonly IDbConnection _dbConnection;
 
-        public TriviaRepository(IConfiguration configuration)
+        public TriviaRepository(IDbConnection dbConnection)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection") 
-                ?? throw new InvalidOperationException("Connection string not found.");
+            _dbConnection = dbConnection ?? throw new ArgumentNullException(nameof(dbConnection));
         }
 
         public async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
-            using var connection = new SqlConnection(_connectionString);
-            return await connection.QueryAsync<Category>(
+            // Dapper mapea directamente el SP al modelo Category de forma asíncrona y ultrarrápida
+            return await _dbConnection.QueryAsync<Category>(
                 "sp_GetCategories", 
                 commandType: CommandType.StoredProcedure
             );
@@ -27,9 +29,8 @@ namespace TriviaPruebaTecnica.Repository
 
         public async Task<IEnumerable<Question>> GetRandomQuestionsByCategoryAsync(int categoryId)
         {
-            using var connection = new SqlConnection(_connectionString);
-
-            using var multi = await connection.QueryMultipleAsync(
+            // Consulta multple optimizada con Dapper (Preguntas y sus Opciones/Respuestas en un solo viaje a BD)
+            using var multi = await _dbConnection.QueryMultipleAsync(
                 "sp_GetRandomQuestionsByCategory",
                 new { CategoryId = categoryId },
                 commandType: CommandType.StoredProcedure
@@ -37,30 +38,35 @@ namespace TriviaPruebaTecnica.Repository
 
             var questions = (await multi.ReadAsync<Question>()).ToList();
             var answers = (await multi.ReadAsync<Answer>()).ToList();
-
             foreach (var q in questions)
-            {
                 q.Answers = answers.Where(a => a.QuestionId == q.QuestionId).ToList();
-            }
 
             return questions;
         }
+
         public async Task SaveGameResultAsync(int userId, int categoryId, int pointsEarned, int correctAnswersCount)
         {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.ExecuteAsync(
+            var parameters = new DynamicParameters();
+            parameters.Add("@UserId", userId);
+            parameters.Add("@CategoryId", categoryId);
+            parameters.Add("@PointsEarned", pointsEarned);
+            parameters.Add("@CorrectAnswersCount", correctAnswersCount);
+
+            await _dbConnection.ExecuteAsync(
                 "sp_SaveGameResult",
-                new { UserId = userId, CategoryId = categoryId, PointsEarned = pointsEarned, CorrectAnswersCount = correctAnswersCount },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }
 
         public async Task<IEnumerable<LeaderboardEntry>> GetLeaderboardAsync(int topCount = 10)
         {
-            using var connection = new SqlConnection(_connectionString);
-            return await connection.QueryAsync<LeaderboardEntry>(
+            var parameters = new DynamicParameters();
+            parameters.Add("@TopCount", topCount);
+
+            return await _dbConnection.QueryAsync<LeaderboardEntry>(
                 "sp_GetLeaderboard",
-                new { TopCount = topCount },
+                parameters,
                 commandType: CommandType.StoredProcedure
             );
         }

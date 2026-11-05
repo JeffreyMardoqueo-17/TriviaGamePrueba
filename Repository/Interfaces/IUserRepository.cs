@@ -10,5 +10,6 @@ namespace TriviaPruebaTecnica.Repository.Interfaces
     {
         Task<int> RegisterAsync(string username, string passwordHash);
         Task<User?> Login(string username);
+        Task<bool> ExistsAsync(string username);
     }
 }
