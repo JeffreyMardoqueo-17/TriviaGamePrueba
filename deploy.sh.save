@@ -1,0 +1,18 @@
+#!/bin/bash
+set -e
+
+echo "Iniciando despliegue de Trivia..."
+
+# Ir a la carpeta del proyecto
+cd /root/trivia-project
+
+# Traer los últimos cambios de GitHub (asegúrate de que sea tu rama principal, ej. main)
+git pull origin main
+
+# Publicar la aplicación en modo Release
+dotnet publish -c Release -o ./publish
+
+# Reiniciar el servicio systemd (ajusta 'trivia' por el nombre exacto de tu servicio en el VPS)
+sudo systemctl restart trivia
+
+echo "¡Despliegue completado con éxito!"
