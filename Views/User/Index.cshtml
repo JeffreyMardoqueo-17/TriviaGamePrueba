@@ -3,82 +3,92 @@
     Layout = "_Layout";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
+<!-- Enlace al archivo CSS específico para la autenticación -->
+<link rel="stylesheet" href="~/css/auth-custom.css" asp-append-version="true" />
+
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center" style="min-height: 75vh;">
         <div class="col-md-6 col-lg-5">
-            <div class="card shadow-lg border-0 rounded-4">
-                <div class="card-body p-4 p-md-5">
+            <!-- Tarjeta contenedora principal -->
+            <div class="card auth-card border-0 p-4 p-md-5 bg-white shadow-lg">
+                
+                <!-- Encabezado con icono redondeado y título -->
+                <div class="text-center mb-4">
+                    <div class="auth-icon-box mx-auto mb-3 rounded-4 d-flex align-items-center justify-content-center shadow-sm">
+                        🎮
+                    </div>
+                    <h2 class="fw-extrabold text-dark mb-1">BAC Trivia</h2>
+                    <p class="text-muted fs-6">Inicia sesión o regístrate para jugar</p>
+                </div>
+
+                <!-- Mensajes de Alerta General -->
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-sm" role="alert">
+                        @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <!-- Pestañas de Navegación (Login / Register) tipo Píldora -->
+                <ul class="nav nav-pills nav-justified auth-pills mb-4 p-1 rounded-pill" id="authTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active rounded-pill fw-semibold py-2" id="login-tab" data-bs-toggle="pill" data-bs-target="#login-content" type="button" role="tab">Iniciar Sesión</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill fw-semibold py-2" id="register-tab" data-bs-toggle="pill" data-bs-target="#register-content" type="button" role="tab">Registrarse</button>
+                    </li>
+                </ul>
+
+                <!-- Contenido de las Pestañas -->
+                <div class="tab-content" id="authTabContent">
                     
-                    <div class="text-center mb-4">
-                        <h2 class="fw-bold text-primary">🎮 BAC Trivia</h2>
-                        <p class="text-muted">Inicia sesión o regístrate para jugar</p>
+                    <!-- TAB LOGIN -->
+                    <div class="tab-pane fade show active" id="login-content" role="tabpanel">
+                        @if (TempData["LoginError"] != null)
+                        {
+                            <div class="alert alert-danger py-2 rounded-3 border-0 shadow-sm text-center small mb-3">@TempData["LoginError"]</div>
+                        }
+
+                        <form asp-action="Login" asp-controller="User" method="post">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Usuario</label>
+                                <input type="text" name="loginUsername" class="form-control custom-input py-3 px-3" required autocomplete="username" placeholder="Ingresa tu usuario" />
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Contraseña</label>
+                                <input type="password" name="loginPassword" class="form-control custom-input py-3 px-3" required autocomplete="current-password" placeholder="••••••••" />
+                            </div>
+                            <button type="submit" class="btn btn-dark w-100 py-3 rounded-pill fw-bold shadow-sm btn-action text-uppercase">
+                                Entrar a Jugar &rarr;
+                            </button>
+                        </form>
                     </div>
 
-                    <!-- Mensajes de Alerta -->
-                    @if (TempData["SuccessMessage"] != null)
-                    {
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            @TempData["SuccessMessage"]
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    }
+                    <!-- TAB REGISTER -->
+                    <div class="tab-pane fade" id="register-content" role="tabpanel">
+                        @if (TempData["RegisterError"] != null)
+                        {
+                            <div class="alert alert-danger py-2 rounded-3 border-0 shadow-sm text-center small mb-3">@TempData["RegisterError"]</div>
+                        }
 
-                    <!-- Pestañas de Navegación (Login / Register) -->
-                    <ul class="nav nav-pills nav-justified mb-4" id="authTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active rounded-pill" id="login-tab" data-bs-toggle="pill" data-bs-target="#login-content" type="button" role="tab">Iniciar Sesión</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link rounded-pill" id="register-tab" data-bs-toggle="pill" data-bs-target="#register-content" type="button" role="tab">Registrarse</button>
-                        </li>
-                    </ul>
-
-                    <!-- Contenido de las Pestañas -->
-                    <div class="tab-content" id="authTabContent">
-                        
-                        <!-- TAB LOGIN -->
-                        <div class="tab-pane fade show active" id="login-content" role="tabpanel">
-                            @if (TempData["LoginError"] != null)
-                            {
-                                <div class="alert alert-danger py-2">@TempData["LoginError"]</div>
-                            }
-
-                            <form asp-action="Login" asp-controller="User" method="post">
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Usuario</label>
-                                    <input type="text" name="loginUsername" class="form-control" required autocomplete="username" placeholder="Ingresa tu usuario" />
-                                </div>
-                                <div class="mb-4">
-                                    <label class="form-label fw-semibold">Contraseña</label>
-                                    <input type="password" name="loginPassword" class="form-control" required autocomplete="current-password" placeholder="••••••••" />
-                                </div>
-                                <button type="submit" class="btn btn-primary w-100 py-2 rounded-pill shadow-sm">Entrar a Jugar</button>
-                            </form>
-                        </div>
-
-                        <!-- TAB REGISTER -->
-                        <div class="tab-pane fade" id="register-content" role="tabpanel">
-                            @if (TempData["RegisterError"] != null)
-                            {
-                                <div class="alert alert-danger py-2">@TempData["RegisterError"]</div>
-                            }
-
-                            <form asp-action="Register" asp-controller="User" method="post">
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Nuevo Usuario</label>
-                                    <input type="text" name="regUsername" class="form-control" required autocomplete="username" placeholder="Elige un usuario único" />
-                                </div>
-                                <div class="mb-4">
-                                    <label class="form-label fw-semibold">Contraseña</label>
-                                    <input type="password" name="regPassword" class="form-control" required autocomplete="new-password" placeholder="Crea una contraseña segura" />
-                                </div>
-                                <button type="submit" class="btn btn-success w-100 py-2 rounded-pill shadow-sm">Crear Cuenta</button>
-                            </form>
-                        </div>
-
+                        <form asp-action="Register" asp-controller="User" method="post">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Nuevo Usuario</label>
+                                <input type="text" name="regUsername" class="form-control custom-input py-3 px-3" required autocomplete="username" placeholder="Elige un usuario único" />
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Contraseña</label>
+                                <input type="password" name="regPassword" class="form-control custom-input py-3 px-3" required autocomplete="new-password" placeholder="Crea una contraseña segura" />
+                            </div>
+                            <button type="submit" class="btn btn-dark w-100 py-3 rounded-pill fw-bold shadow-sm btn-action text-uppercase">
+                                Crear Cuenta
+                            </button>
+                        </form>
                     </div>
 
                 </div>
+
             </div>
         </div>
     </div>

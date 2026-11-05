@@ -5,8 +5,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8181
-EXPOSE 8081
-
 
 # Esta fase se usa para compilar el proyecto de servicio
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
@@ -27,4 +25,8 @@ RUN dotnet publish "./TriviaPruebaTecnica.csproj" -c $BUILD_CONFIGURATION -o /ap
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Forzar explícitamente el puerto interno a 8181 para evitar conflictos con el puerto 8080 por defecto
+ENV ASPNETCORE_URLS=http://+:8181
+
 ENTRYPOINT ["dotnet", "TriviaPruebaTecnica.dll"]

@@ -1,0 +1,89 @@
+body {
+    background-color: #f4f6f9;
+}
+
+/* Tarjeta principal del juego con estilo limpio, moderno y sin bordes bruscos */
+.game-card {
+    border-radius: 2rem !important;
+    box-shadow: 0 1rem 3rem rgba(15, 23, 42, 0.06) !important;
+}
+
+/* Insignias e indicadores */
+.game-badge-step {
+    font-size: 1.1rem;
+}
+
+.timer-pill {
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+}
+
+/* Texto de la pregunta */
+#question-text {
+    font-size: 1.35rem;
+    color: #1e293b;
+    line-height: 1.5;
+}
+
+/* Botones de opciones de respuesta con transiciones fluidas estilo videojuego */
+.answer-option-btn {
+    background-color: #f8fafc;
+    border: 2px solid #e2e8f0;
+    color: #334155;
+    border-radius: 1rem !important;
+    transition: all 0.2s ease-in-out;
+    text-align: left;
+}
+
+.answer-option-btn:hover:not(:disabled) {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    color: #0f172a;
+    box-shadow: 0 0.5rem 1rem rgba(15, 23, 42, 0.04);
+}
+
+/* Estados al responder */
+.answer-correct {
+    background-color: #dcfce7 !important;
+    border-color: #22c55e !important;
+    color: #15803d !important;
+    font-weight: 700;
+}
+
+.answer-incorrect {
+    background-color: #fee2e2 !important;
+    border-color: #ef4444 !important;
+    color: #b91c1c !important;
+    font-weight: 700;
+}
+
+/* Caja de puntuación final */
+.score-display-box {
+    border: 2px dashed #cbd5e1;
+    background-color: #f8fafc !important;
+}
+
+/* Botones de acción final */
+.btn-play-action {
+    border-radius: 50rem !important;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    transition: all 0.2s ease;
+}
+
+.btn-play-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(15, 23, 42, 0.12);
+}
+
+/* Animación sutil de pulso para el temporizador crítico */
+@keyframes pulse-soft {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.pulse-animation {
+    animation: pulse-soft 0.8s infinite ease-in-out;
+}
