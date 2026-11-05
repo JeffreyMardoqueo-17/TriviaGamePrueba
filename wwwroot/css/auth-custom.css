@@ -2,13 +2,11 @@ body {
     background-color: #f4f6f9;
 }
 
-/* Tarjeta principal con bordes suaves y elevación profesional */
 .auth-card {
     border-radius: 2rem !important;
     box-shadow: 0 1rem 3rem rgba(15, 23, 42, 0.08) !important;
 }
 
-/* Contenedor del ícono superior */
 .auth-icon-box {
     width: 65px;
     height: 65px;
@@ -17,7 +15,6 @@ body {
     font-size: 1.8rem;
 }
 
-/* Estilo del menú de pestañas (Píldora contenedora) */
 .auth-pills {
     background-color: #f1f5f9;
     border: 1px solid #e2e8f0;
@@ -39,7 +36,6 @@ body {
     color: #0f172a;
 }
 
-/* Inputs de formulario modernos y limpios */
 .custom-input {
     background-color: #f8fafc !important;
     border: 2px solid #e2e8f0 !important;
@@ -55,7 +51,6 @@ body {
     box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1) !important;
 }
 
-/* Botones de acción principales */
 .btn-action {
     background-color: #0f172a;
     border: none;

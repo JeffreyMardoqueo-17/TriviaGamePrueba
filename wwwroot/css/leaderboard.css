@@ -2,13 +2,11 @@ body {
     background-color: #f4f6f9;
 }
 
-/* Tarjeta contenedora principal con bordes suaves y elegantes */
 .leaderboard-main-card {
     border-radius: 2rem !important;
     box-shadow: 0 1rem 3rem rgba(15, 23, 42, 0.05) !important;
 }
 
-/* Tarjetas del podio superior */
 .podium-card {
     background-color: #f8fafc;
     border-radius: 1.5rem !important;
@@ -21,7 +19,6 @@ body {
     box-shadow: 0 1rem 2rem rgba(15, 23, 42, 0.08);
 }
 
-/* Primer lugar destacado con un toque sutil dorado y elevación */
 .podium-first {
     background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
     border: 2px solid #f59e0b !important;
@@ -49,10 +46,9 @@ body {
     font-size: 1.6rem;
 }
 
-/* Tabla limpia, amplia y sin barras de desplazamiento forzadas */
 .table-container-fluid {
     width: 100%;
-    overflow-x: visible; /* Elimina scroll innecesario */
+    overflow-x: visible; 
 }
 
 .custom-table {
@@ -105,7 +101,6 @@ body {
     border-bottom-right-radius: 1rem;
 }
 
-/* Botón inferior estilizado */
 .btn-back {
     background-color: #0f172a;
     border: none;
