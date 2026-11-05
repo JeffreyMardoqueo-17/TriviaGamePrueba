@@ -1,0 +1,122 @@
+body {
+    background-color: #f4f6f9;
+}
+
+/* Tarjeta contenedora principal con bordes suaves y elegantes */
+.leaderboard-main-card {
+    border-radius: 2rem !important;
+    box-shadow: 0 1rem 3rem rgba(15, 23, 42, 0.05) !important;
+}
+
+/* Tarjetas del podio superior */
+.podium-card {
+    background-color: #f8fafc;
+    border-radius: 1.5rem !important;
+    box-shadow: 0 0.5rem 1.5rem rgba(15, 23, 42, 0.03);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.podium-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 1rem 2rem rgba(15, 23, 42, 0.08);
+}
+
+/* Primer lugar destacado con un toque sutil dorado y elevación */
+.podium-first {
+    background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+    border: 2px solid #f59e0b !important;
+    transform: translateY(-8px);
+    box-shadow: 0 1rem 2.5rem rgba(245, 158, 11, 0.12);
+}
+
+.podium-first:hover {
+    transform: translateY(-12px);
+}
+
+.podium-badge {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+
+.podium-badge-first {
+    width: 60px;
+    height: 60px;
+    font-size: 1.6rem;
+}
+
+/* Tabla limpia, amplia y sin barras de desplazamiento forzadas */
+.table-container-fluid {
+    width: 100%;
+    overflow-x: visible; /* Elimina scroll innecesario */
+}
+
+.custom-table {
+    border-collapse: separate;
+    border-spacing: 0 0.75rem;
+}
+
+.custom-table thead th {
+    background-color: #0f172a;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    padding: 1.1rem 1rem;
+    border: none;
+}
+
+.custom-table thead th:first-child {
+    border-top-left-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+}
+
+.custom-table thead th:last-child {
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
+
+.custom-table tbody tr.table-row-item {
+    background-color: #f8fafc;
+    transition: all 0.2s ease;
+}
+
+.custom-table tbody tr.table-row-item:hover {
+    background-color: #f1f5f9;
+    transform: scale(1.005);
+}
+
+.custom-table tbody td {
+    padding: 1.1rem 1rem;
+    border: none;
+}
+
+.custom-table tbody td:first-child {
+    border-top-left-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+}
+
+.custom-table tbody td:last-child {
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
+
+/* Botón inferior estilizado */
+.btn-back {
+    background-color: #0f172a;
+    border: none;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+    border-radius: 50rem !important;
+    padding: 0.8rem 2.5rem !important;
+}
+
+.btn-back:hover {
+    background-color: #1e293b;
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(15, 23, 42, 0.15);
+}

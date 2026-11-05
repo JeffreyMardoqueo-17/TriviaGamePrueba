@@ -1,0 +1,32 @@
+body {
+    background-color: #f8fafc;
+}
+
+.category-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.03) !important;
+}
+
+.category-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.08) !important;
+}
+
+.icon-box {
+    width: 75px;
+    height: 75px;
+    background-color: #f0f7ff;
+    color: #0d6efd;
+}
+
+.btn-play {
+    background-color: #1e293b;
+    border: none;
+    letter-spacing: 0.5px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-play:hover {
+    background-color: #0f172a;
+    transform: scale(1.02);
+}

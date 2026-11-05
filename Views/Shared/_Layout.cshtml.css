@@ -46,3 +46,28 @@ button.accept-policy {
   white-space: nowrap;
   line-height: 60px;
 }
+/* Contenedor general del menú flotante */
+.nav-pill-container {
+    background-color: #f8f9fa;
+    border-color: #e9ecef !important;
+}
+
+/* Transición fluida para los enlaces */
+.nav-pill-container .nav-link {
+    transition: all 0.2s ease-in-out;
+    border-radius: 50rem;
+}
+
+/* Hover para pestañas inactivas */
+.nav-pill-container .nav-link:hover {
+    color: #0d6efd !important;
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* ESTILO DE LA PESTAÑA ACTIVA (Estilo IDÉNTICO a tu diseño de referencia) */
+.nav-pill-container .nav-link.active-tab {
+    background-color: #ffffff !important;
+    color: #0d6efd !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+}
