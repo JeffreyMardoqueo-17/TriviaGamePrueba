@@ -4,14 +4,21 @@
 }
 
 <link rel="stylesheet" href="~/css/auth-custom.css" asp-append-version="true" />
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <div class="container py-5">
     <div class="row justify-content-center align-items-center formulario" style="min-height: 75vh;">
         <div class="col-md-6 col-lg-5">
-            <div class="card auth-card border-0 p-4 p-md-5 bg-white shadow-lg formulario">
+            <div class="card auth-card border-0 p-4 p-md-5 bg-white shadow-lg formulario position-relative">
                 
+                <div id="authLoader" class="position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-90 rounded-4 d-none flex-column align-items-center justify-content-center" style="z-index: 10;">
+                    <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-1" id="loaderText">¡Iniciando sesión con éxito!</h5>
+                    <p class="text-muted small">Preparando tu experiencia...</p>
+                </div>
+
                 <div class="text-center mb-4">
                     <div class="d-flex align-items-center justify-content-center btn-action text-white rounded-3 shadow-sm mx-auto"
                          style="width: 38px; height: 38px; font-size: 1.1rem;">
@@ -32,139 +39,186 @@
                 <ul class="nav nav-pills nav-justified auth-pills mb-4 p-1 rounded-pill" id="authTab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active rounded-pill fw-semibold py-2" id="login-tab"
-                                data-bs-toggle="pill" data-bs-target="#login-content" type="button" role="tab">Iniciar
-                            Sesión</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link rounded-pill fw-semibold py-2" id="register-tab" data-bs-toggle="pill"
-                                    data-bs-target="#register-content" type="button" role="tab">Registrarse</button>
-                        </li>
-                    </ul>
+                                data-bs-toggle="pill" data-bs-target="#login-content" type="button" role="tab">Iniciar Sesión</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill fw-semibold py-2" id="register-tab" data-bs-toggle="pill"
+                                data-bs-target="#register-content" type="button" role="tab">Registrarse</button>
+                    </li>
+                </ul>
 
-                    <div class="tab-content" id="authTabContent">
+                <div class="tab-content" id="authTabContent">
     
-                        <!-- TAB LOGIN -->
-                        <div class="tab-pane formulario fade show active" id="login-content" role="tabpanel">
+                 
+                    <div class="tab-pane formulario fade show active" id="login-content" role="tabpanel">
                         
-                            <!-- Alerta específica para errores de inicio de sesión -->
-                            @if (TempData["LoginError"] != null)
-                            {
-                                <div class="alert alert-danger py-2 rounded-3 border-0 shadow-sm text-center small mb-3">
-                                    @TempData["LoginError"]
-                                </div>
-                            }
-
-                            <form asp-action="Login" asp-controller="User" method="post" class="formulario">
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold text-secondary small text-uppercase">Correo
-                                        Electrónico</label>
-                                        <input type="email" name="loginUsername" class="form-control custom-input py-3 px-3"
-                                               required autocomplete="email" placeholder="ejemplo@gmail.com" />
-                                    </div>
-            
-                                    <div class="mb-4">
-                                        <label class="form-label fw-bold text-secondary small text-uppercase">Contraseña</label>
-                                        <div class="input-group">
-                                            <input type="password" name="loginPassword" id="loginPassword"
-                                                   class="form-control custom-input py-3 px-3 border-end-0" required
-                                                   autocomplete="current-password" placeholder="••••••••" />
-                                            <button
-                                                class="btn btn-outline-secondary border border-start-0 bg-white text-muted px-3 toggle-password"
-                                                type="button" data-target="loginPassword">
-                                                <i class="bi bi-eye-slash" id="loginPassword-icon"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <button type="submit"
-                                            class="btn btn-dark w-100 py-3 rounded-pill fw-bold shadow-sm btn-action text-uppercase">
-                                        Entrar a Jugar &rarr;
-                                    </button>
-                                </form>
+                        @if (TempData["LoginError"] != null)
+                        {
+                            <div class="alert alert-danger py-2 rounded-3 border-0 shadow-sm text-center small mb-3">
+                                @TempData["LoginError"]
                             </div>
-
-                            <!-- TAB REGISTER -->
-                            <div class="tab-pane fade" id="register-content" role="tabpanel">
-
-                                @if (TempData["RegisterError"] != null)
-                                {
-                                    <div class="alert alert-danger py-2 rounded-3 border-0 shadow-sm text-center small mb-3">
-                                        @TempData["RegisterError"]
-                                    </div>
-                                }
-
-                                <form asp-action="Register" asp-controller="User" method="post">
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold text-secondary small text-uppercase">Correo
-                                            Electrónico</label>
-                                            <input type="email" name="regUsername" class="form-control custom-input py-3 px-3"
-                                                   required autocomplete="email" placeholder="ejemplo@gmail.com" />
-                                        </div>
-            
-                                        <div class="mb-4">
-                                            <label class="form-label fw-bold text-secondary small text-uppercase">Contraseña</label>
-                                            <div class="input-group">
-                                                <input type="password" name="regPassword" id="regPassword"
-                                                       class="form-control custom-input py-3 px-3 border-end-0" required
-                                                       autocomplete="new-password" placeholder="Crea una contraseña segura" />
-                                                <button
-                                                    class="btn btn-outline-secondary border border-start-0 bg-white text-muted px-3 toggle-password"
-                                                    type="button" data-target="regPassword">
-                                                    <i class="bi bi-eye-slash" id="regPassword-icon"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <button type="submit"
-                                                class="btn btn-dark w-100 py-3 rounded-pill fw-bold shadow-sm btn-action text-uppercase">
-                                            Crear Cuenta
-                                        </button>
-                                    </form>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @section Scripts {
-                <script>
-                    document.addEventListener("DOMContentLoaded", function () {
-                        const activeTab = '@TempData["ActiveTab"]';
-
-                        if (activeTab === 'register') {
-                            const registerTabEl = document.querySelector('#register-tab');
-                            if (registerTabEl) {
-                                const tab = new bootstrap.Tab(registerTabEl);
-                                tab.show();
-                            }
-                        } else {
-                            const loginTabEl = document.querySelector('#login-tab');
-                            if (loginTabEl) {
-                                const tab = new bootstrap.Tab(loginTabEl);
-                                tab.show();
-                            }
                         }
 
-                        // Script para mostrar/ocultar contraseña
-                        const toggleButtons = document.querySelectorAll('.toggle-password');
-                        toggleButtons.forEach(button => {
-                            button.addEventListener('click', function () {
-                                const targetId = this.getAttribute('data-target');
-                                const passwordInput = document.getElementById(targetId);
-                                const icon = document.getElementById(`${targetId}-icon`);
+                        <form asp-action="Login" asp-controller="User" method="post" class="formulario auth-form-submit">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Correo Electrónico</label>
+                                <input type="email" name="loginUsername" 
+                                       value="@ViewBag.LoginUsername" 
+                                       class="form-control custom-input py-3 px-3 strict-email"
+                                       required autocomplete="email" placeholder="ejemplo@gmail.com" />
+                            </div>
+            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Contraseña</label>
+                                <div class="input-group">
+                                    <input type="password" name="loginPassword" id="loginPassword"
+                                           class="form-control custom-input py-3 px-3 border-end-0" required
+                                           autocomplete="current-password" placeholder="••••••••" />
+                                    <button class="btn btn-outline-secondary border border-start-0 bg-white text-muted px-3 toggle-password"
+                                            type="button" data-target="loginPassword">
+                                        <i class="bi bi-eye-slash" id="loginPassword-icon"></i>
+                                    </button>
+                                </div>
+                            </div>
 
-                                if (passwordInput.type === 'password') {
-                                    passwordInput.type = 'text';
-                                    icon.classList.remove('bi-eye-slash');
-                                    icon.classList.add('bi-eye');
-                                } else {
-                                    passwordInput.type = 'password';
-                                    icon.classList.remove('bi-eye');
-                                    icon.classList.add('bi-eye-slash');
-                                }
-                            });
-                        });
-                    });
-                </script>
+                            <button type="submit"
+                                    class="btn btn-dark w-100 py-3 rounded-pill fw-bold shadow-sm btn-action text-uppercase">
+                                Entrar a Jugar &rarr;
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="tab-pane fade" id="register-content" role="tabpanel">
+
+                        @if (TempData["RegisterError"] != null)
+                        {
+                            <div class="alert alert-danger py-2 rounded-3 border-0 shadow-sm text-center small mb-3">
+                                @TempData["RegisterError"]
+                            </div>
+                        }
+
+                        <form asp-action="Register" asp-controller="User" method="post" class="auth-form-submit">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Correo Electrónico</label>
+                                <input type="email" name="regUsername" 
+                                       value="@ViewBag.RegUsername" 
+                                       class="form-control custom-input py-3 px-3 strict-email"
+                                       required autocomplete="email" placeholder="ejemplo@gmail.com" />
+                            </div>
+            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Contraseña</label>
+                                <div class="input-group">
+                                    <input type="password" name="regPassword" id="regPassword"
+                                           class="form-control custom-input py-3 px-3 border-end-0" required
+                                           autocomplete="new-password" placeholder="Mínimo 6 caracteres" />
+                                    <button class="btn btn-outline-secondary border border-start-0 bg-white text-muted px-3 toggle-password"
+                                            type="button" data-target="regPassword">
+                                        <i class="bi bi-eye-slash" id="regPassword-icon"></i>
+                                    </button>
+                                </div>
+                                <!-- Texto indicador de requisitos de contraseña -->
+                                <div id="passwordHelp" class="form-text text-muted mt-2 small">
+                                    <i id="pwdLengthIcon" class="bi bi-circle text-secondary me-1"></i> Debe tener al menos 6 caracteres.
+                                </div>
+                            </div>
+
+                            <button type="submit" id="btnRegister"
+                                    class="btn btn-dark w-100 py-3 rounded-pill fw-bold shadow-sm btn-action text-uppercase">
+                                Crear Cuenta
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const activeTab = '@TempData["ActiveTab"]';
+
+            if (activeTab === 'register') {
+                const registerTabEl = document.querySelector('#register-tab');
+                if (registerTabEl) new bootstrap.Tab(registerTabEl).show();
+            } else {
+                const loginTabEl = document.querySelector('#login-tab');
+                if (loginTabEl) new bootstrap.Tab(loginTabEl).show();
             }
+
+            //Validar estrictamente campos de correo (Sin espacios en blanco ni tildes)
+            const strictEmailInputs = document.querySelectorAll('.strict-email');
+            strictEmailInputs.forEach(input => {
+                input.addEventListener('input', function () {
+                    this.value = this.value.replace(/[\sáéíóúÁÉÍÓÚñÑ]/g, '');
+                });
+            });
+
+            // validacion  visual de la contraseña en tiempo realminimo 6 
+            const regPasswordInput = document.getElementById('regPassword');
+            const pwdLengthIcon = document.getElementById('pwdLengthIcon');
+            
+            if (regPasswordInput) {
+                regPasswordInput.addEventListener('input', function () {
+                    if (this.value.length >= 6) {
+                        pwdLengthIcon.className = "bi bi-check-circle-fill text-success me-1";
+                        pwdLengthIcon.nextSibling.textContent = " Contraseña válida.";
+                    } else {
+                        pwdLengthIcon.className = "bi bi-circle text-secondary me-1";
+                        pwdLengthIcon.nextSibling.textContent = " Debe tener al menos 6 caracteres.";
+                    }
+                });
+            }
+
+            //  Spinner al enviar de forma exitosa los formularios
+            const authForms = document.querySelectorAll('.auth-form-submit');
+            const authLoader = document.getElementById('authLoader');
+            const loaderText = document.getElementById('loaderText');
+
+            authForms.forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    // Validar si es registro que cumpla con los 6 caracteres antes de mostrar loader
+                    if (form.querySelector('#regPassword') && form.querySelector('#regPassword').value.length < 6) {
+                        e.preventDefault();
+                        alert('La contraseña debe tener al menos 6 caracteres.');
+                        return;
+                    }
+
+                    //  el mensaje segun el formulario
+                    if (form.querySelector('#regPassword')) {
+                        loaderText.textContent = "¡Creando cuenta con éxito!";
+                    } else {
+                        loaderText.textContent = "¡Iniciando sesión con éxito!";
+                    }
+
+                    // Mostrar el loader visualmente
+                    authLoader.classList.remove('d-none');
+                    authLoader.classList.add('d-flex');
+                });
+            });
+
+            // para mostrar/ocultar contraseña
+            const toggleButtons = document.querySelectorAll('.toggle-password');
+            toggleButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const targetId = this.getAttribute('data-target');
+                    const passwordInput = document.getElementById(targetId);
+                    const icon = document.getElementById(`${targetId}-icon`);
+
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        icon.classList.remove('bi-eye-slash');
+                        icon.classList.add('bi-eye');
+                    } else {
+                        passwordInput.type = 'password';
+                        icon.classList.remove('bi-eye');
+                        icon.classList.add('bi-eye-slash');
+                    }
+                });
+            });
+        });
+    </script>
+}

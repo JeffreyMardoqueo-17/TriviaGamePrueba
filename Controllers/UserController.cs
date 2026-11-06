@@ -28,27 +28,28 @@ namespace TriviaPruebaTecnica.Controllers
 
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string loginUsername, string loginPassword)
         {
-            // Pasamos los nombres exactos que vienen del form de la vista
-            var (success, message, user, totalPoints) = await _userService.AuthenticateAsync(loginUsername, loginPassword);
-
             TempData["ActiveTab"] = "login";
+
+            var (success, message, user, totalPoints) = await _userService.AuthenticateAsync(loginUsername, loginPassword);
 
             if (!success || user == null)
             {
                 TempData["LoginError"] = message;
-                return RedirectToAction(nameof(Index));
+                ViewBag.LoginUsername = loginUsername;
+                return View("Index");
             }
 
             var claims = new[]
             {
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Name, user.Username),
-        new Claim("TotalPoints", totalPoints.ToString())
-    };
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim("TotalPoints", totalPoints.ToString())
+            };
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
@@ -72,18 +73,21 @@ namespace TriviaPruebaTecnica.Controllers
         {
             var (success, message) = await _userService.RegisterAsync(regUsername, regPassword);
 
-            TempData["ActiveTab"] = "register";
-
             if (!success)
             {
+                TempData["ActiveTab"] = "register";
                 TempData["RegisterError"] = message;
-                return RedirectToAction(nameof(Index));
+                ViewBag.RegUsername = regUsername; 
+                return View("Index");
             }
 
-            TempData["SuccessMessage"] = message;
+            //  REGISTRO EXITOSO ---
+            TempData["ActiveTab"] = "login";
+            TempData["SuccessMessage"] = message + " Por favor, inicia sesión.";
+
+            //  un Redirect para limpiar los datos 
             return RedirectToAction(nameof(Index));
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]

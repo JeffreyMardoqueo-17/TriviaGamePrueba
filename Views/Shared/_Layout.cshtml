@@ -83,7 +83,8 @@
                         </div>
 
                         <div class="offcanvas offcanvas-end d-lg-none mobile-arcade-offcanvas" tabindex="-1"
-                             id="mobileNavbarOffcanvas" aria-labelledby="mobileNavbarOffcanvasLabel">
+                             id="mobileNavbarOffcanvas" aria-labelledby="mobileNavbarOffcanvasLabel" data-bs-backdrop="true"
+                             data-bs-scroll="false">
                             <div class="offcanvas-header border-bottom px-4 py-3 bg-white">
                                 <h5 class="offcanvas-title fw-bold text-dark d-flex align-items-center gap-2"
                                     id="mobileNavbarOffcanvasLabel">
@@ -96,7 +97,10 @@
                                 <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas"
                                         aria-label="Close"></button>
                             </div>
-                            <div class="offcanvas-body px-4 py-4 d-flex flex-column justify-content-between bg-white">
+    
+                            <!-- Cuerpo con scroll nativo para que nada quede oculto -->
+                            <div class="offcanvas-body px-4 py-4 d-flex flex-column bg-white overflow-auto"
+                                 style="max-height: calc(100vh - 70px);">
                                 <div>
                                     <div class="mb-4 p-3 bg-light rounded-4 border shadow-sm">
                                         <div class="d-flex align-items-center gap-3 mb-3">
@@ -134,7 +138,8 @@
                                         </div>
                                     </div>
 
-                                    <div class="pt-3 border-top mt-4">
+                                    <!-- Botón de cerrar sesión anclado al final del flujo con margen superior automático -->
+                                    <div class="pt-3 border-top mt-auto mb-3">
                                         <form asp-controller="User" asp-action="Logout" method="post" class="w-100">
                                             @Html.AntiForgeryToken()
                                             <button type="submit"
