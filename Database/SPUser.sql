@@ -56,6 +56,7 @@ BEGIN
 END;
 GO
 --
+
 CREATE OR ALTER PROCEDURE sp_ExistUser
     @Username NVARCHAR(50)
 AS
@@ -68,7 +69,7 @@ BEGIN
         RETURN;
     END
 
-    -- Retorna 1 si existe, 0 si no existe (muy eficiente con IF EXISTS)
+    -- Retorna 1 si existe, 0 si no existe
     IF EXISTS (SELECT 1 FROM Users WHERE Username = @Username)
     BEGIN
         SELECT CAST(1 AS BIT) AS UserExists;

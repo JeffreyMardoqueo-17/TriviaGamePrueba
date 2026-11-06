@@ -20,16 +20,15 @@ namespace TriviaPruebaTecnica.Services
             _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-
         public async Task<(bool Success, string Message)> RegisterAsync(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-                return (false, "El nombre de usuario y la contraseña no pueden estar vacíos.");
+                return (false, "El correo y la contraseña no pueden estar vacíos.");
 
-            var cleanUsername = username.Trim();
+            var cleanUsername = username.Trim().ToLower();
 
             if (cleanUsername.Length < 3 || cleanUsername.Length > 50)
-                return (false, "El nombre de usuario debe tener entre 3 y 50 caracteres.");
+                return (false, "El correo debe tener entre 3 y 50 caracteres.");
 
             if (password.Length < 6)
                 return (false, "La contraseña debe tener al menos 6 caracteres.");
@@ -39,43 +38,27 @@ namespace TriviaPruebaTecnica.Services
                 bool userExists = await _userRepository.ExistsAsync(cleanUsername);
                 if (userExists)
                 {
-                    _logger.LogWarning("Intento de registro fallido: El usuario '{Username}' ya existe.", cleanUsername);
-                    return (false, "El nombre de usuario ya está registrado. Por favor, elige otro.");
+                    return (false, "Este correo ya está registrado. Por favor, elige otro o inicia sesión.");
                 }
 
                 string passwordHash = _passwordHasher.HashPassword(password);
                 await _userRepository.RegisterAsync(cleanUsername, passwordHash);
 
-                _logger.LogInformation("Usuario '{Username}' registrado exitosamente.", cleanUsername);
-                return (true, "Usuario registrado exitosamente.");
+                return (true, "¡Cuenta creada con éxito! Por favor, inicia sesión.");
             }
             catch (Exception ex)
             {
-                // Capturamos si la base de datos arroja un error de llave duplicada (SQL Server Error 2627 o 2601)
-                if (ex.Message.Contains("Violation of PRIMARY KEY") ||
-                    ex.Message.Contains("duplicate key") ||
-                    ex.Message.Contains("IX_") ||
-                    (ex is Microsoft.Data.SqlClient.SqlException sqlEx && (sqlEx.Number == 2627 || sqlEx.Number == 2601)))
-                {
-                    _logger.LogWarning("Intento de registro fallido por restricción de BD: El usuario '{Username}' ya existe.", cleanUsername);
-                    return (false, "El nombre de usuario ya está registrado. Por favor, elige otro.");
-                }
-
-                // Si es cualquier otro error real de servidor o conexión
-                _logger.LogError(ex, "Error crítico al registrar al usuario '{Username}'.", cleanUsername);
-                return (false, "Ocurrió un error interno al procesar el registro. Inténtalo más tarde.");
+                _logger.LogError(ex, "Error al registrar usuario.");
+                return (false, "Ocurrió un error al procesar el registro.");
             }
         }
 
-        // Actualizamos la tupla para retornar también los puntos totales (TotalPoints)
         public async Task<(bool Success, string Message, User? User, int TotalPoints)> AuthenticateAsync(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-            {
-                return (false, "Debe ingresar usuario y contraseña.", null, 0);
-            }
+                return (false, "Debe ingresar su correo y contraseña.", null, 0);
 
-            var cleanUsername = username.Trim();
+            var cleanUsername = username.Trim().ToLower();
 
             try
             {
@@ -83,27 +66,26 @@ namespace TriviaPruebaTecnica.Services
 
                 if (user == null || string.IsNullOrEmpty(user.PasswordHash))
                 {
-                    _logger.LogWarning("Intento de autenticación fallido: Usuario no encontrado '{Username}'.", cleanUsername);
-                    return (false, "Credenciales inválidas.", null, 0);
+                    _logger.LogWarning("Intento fallido: Correo no encontrado '{Username}'.", cleanUsername);
+                    return (false, "El usuario o la contraseña son incorrectos.", null, 0); // Mensaje genérico por seguridad
                 }
 
                 bool isValidPassword = _passwordHasher.VerifyPassword(password, user.PasswordHash);
 
                 if (!isValidPassword)
                 {
-                    _logger.LogWarning("Intento de autenticación fallido: Contraseña incorrecta para el usuario '{Username}'.", cleanUsername);
-                    return (false, "Credenciales inválidas.", null, 0);
+                    _logger.LogWarning("Intento fallido: Contraseña incorrecta para '{Username}'.", cleanUsername);
+                    return (false, "El usuario o la contraseña son incorrectos.", null, 0);
                 }
 
-                // Consultamos los puntos acumulados del usuario
                 int totalPoints = await _userRepository.GetUserTotalPointsAsync(user.Id);
 
-                _logger.LogInformation("Usuario '{Username}' autenticado exitosamente con {Points} puntos.", cleanUsername, totalPoints);
+                _logger.LogInformation("Usuario '{Username}' autenticado exitosamente.", cleanUsername);
                 return (true, "Autenticación exitosa.", user, totalPoints);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error crítico durante la autenticación del usuario '{Username}'.", cleanUsername);
+                _logger.LogError(ex, "Error crítico durante la autenticación de '{Username}'.", cleanUsername);
                 return (false, "Ocurrió un error interno al procesar la autenticación.", null, 0);
             }
         }

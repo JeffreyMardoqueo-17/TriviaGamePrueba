@@ -1,0 +1,48 @@
+/* --- CONFIGURACIÓN BASE Y FOOTER ESTÁTICO --- */
+html[b-sxk9s0qjv9], body[b-sxk9s0qjv9] {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #f8fafc;
+    color: #0f172a;
+}
+
+body[b-sxk9s0qjv9] {
+    display: flex;
+    flex-direction: column;
+}
+
+.page-wrapper[b-sxk9s0qjv9] {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.content-area[b-sxk9s0qjv9] {
+    flex: 1 0 auto;
+}
+
+.footer[b-sxk9s0qjv9] {
+    flex-shrink: 0;
+    width: 100%;
+    background-color: #ffffff;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* --- RESPONSIVE OFFCANVAS MÓVIL (50% Ancho, Altura Completa, Blur) --- */
+@media (max-width: 991.98px) {
+    .mobile-arcade-offcanvas[b-sxk9s0qjv9] {
+        width: 50% !important;
+        min-width: 270px;
+        height: 100vh !important;
+        border-radius: 0 !important;
+        box-shadow: -15px 0 40px rgba(0, 0, 0, 0.2) !important;
+    }
+}
+
+.offcanvas-backdrop.show[b-sxk9s0qjv9] {
+    opacity: 0.5 !important;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}   
