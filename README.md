@@ -5,12 +5,11 @@ Aplicación web de trivia desarrollada en C# con .NET 8 como parte de una prueba
 El proyecto permite a los usuarios registrarse, iniciar sesión, jugar en diferentes categorías y consultar tablas de ranking.
 
 
-<img width="3630" height="1612" alt="image" src="https://github.com/user-attachments/assets/1ddd2069-17c2-45d0-9180-a4629870d0a8" />
-
-<img width="3602" height="2002" alt="image" src="https://github.com/user-attachments/assets/546fd7b5-78ac-4c53-b9a2-b3d5f0287341" />
-
-<img width="3665" height="1995" alt="image" src="https://github.com/user-attachments/assets/513ffba7-5c52-45b1-bff0-de9fc46b770f" />
-
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/1ddd2069-17c2-45d0-9180-a4629870d0a8" width="32%" />
+  <img src="https://github.com/user-attachments/assets/546fd7b5-78ac-4c53-b9a2-b3d5f0287341" width="32%" />
+  <img src="https://github.com/user-attachments/assets/513ffba7-5c52-45b1-bff0-de9fc46b770f" width="32%" />
+</p>
 
 ## Demo
 
