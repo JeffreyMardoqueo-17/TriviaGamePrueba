@@ -7,7 +7,9 @@ document.addEventListener("DOMContentLoaded", function () {
     let score = 0;
     let correctCount = 0;
     let timer = null;
-    let timeLeft = 30; // 30 segundos por pregunta
+    let timeLeft = 30;
+    let isGameOver = false;
+    let isPaused = false;
 
     // Efectos de sonido
     const soundCorrect = new Audio('/audio/correcto.wav');
@@ -26,7 +28,6 @@ document.addEventListener("DOMContentLoaded", function () {
         audioObj.currentTime = 0;
     }
 
-    // Función para mezclar aleatoriamente las respuestas (Algoritmo Fisher-Yates)
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -36,6 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function saveGameState() {
+        if (isGameOver) return;
         const state = {
             questions: questions,
             currentIndex: currentIndex,
@@ -50,20 +52,26 @@ document.addEventListener("DOMContentLoaded", function () {
         const savedState = sessionStorage.getItem(storageKey);
 
         if (savedState) {
-            const state = JSON.parse(savedState);
-            questions = state.questions;
-            currentIndex = state.currentIndex;
-            score = state.score;
-            correctCount = state.correctCount;
-            timeLeft = state.timeLeft || 30;
+            try {
+                const state = JSON.parse(savedState);
+                questions = state.questions || [];
+                currentIndex = state.currentIndex || 0;
+                score = state.score || 0;
+                correctCount = state.correctCount || 0;
+                timeLeft = state.timeLeft || 30;
 
-            if (currentIndex >= questions.length) {
+                if (currentIndex >= questions.length || questions.length === 0) {
+                    sessionStorage.removeItem(storageKey);
+                    startFreshGame();
+                    return;
+                }
+
+                showQuestion(false);
+            } catch (err) {
+                console.error("Error al leer el estado guardado:", err);
                 sessionStorage.removeItem(storageKey);
                 startFreshGame();
-                return;
             }
-
-            showQuestion(false);
         } else {
             startFreshGame();
         }
@@ -74,6 +82,8 @@ document.addEventListener("DOMContentLoaded", function () {
         currentIndex = 0;
         score = 0;
         correctCount = 0;
+        isGameOver = false;
+        isPaused = false;
         
         if (questions.length === 0) return;
 
@@ -82,6 +92,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function showQuestion(resetTime = true) {
+        if (isGameOver || isPaused) return;
+
         if (currentIndex >= questions.length) {
             endGame();
             return;
@@ -98,31 +110,43 @@ document.addEventListener("DOMContentLoaded", function () {
         startTimer();
 
         const q = questions[currentIndex];
-        document.getElementById('question-counter').innerText = `Pregunta ${currentIndex + 1} de ${questions.length}`;
-        document.getElementById('question-text').innerText = q.QuestionText;
+        
+        const counterEl = document.getElementById('question-counter');
+        const textEl = document.getElementById('question-text');
+        
+        if (counterEl) counterEl.innerText = `Pregunta ${currentIndex + 1} de ${questions.length}`;
+        if (textEl) textEl.innerText = q.QuestionText;
 
         const answersDiv = document.getElementById('answers-container');
-        answersDiv.innerHTML = '';
-        document.getElementById('feedback-container').innerText = '';
+        const feedbackDiv = document.getElementById('feedback-container');
+        
+        if (answersDiv) answersDiv.innerHTML = '';
+        if (feedbackDiv) feedbackDiv.innerText = '';
 
-        // Creamos una copia de las respuestas y las barajamos aleatoriamente
         const shuffledAnswers = shuffleArray([...q.Answers]);
 
         shuffledAnswers.forEach(ans => {
             const btn = document.createElement('button');
             btn.className = 'btn answer-option-btn text-start p-3 px-4 fs-6 fw-semibold shadow-sm';
             btn.innerText = ans.AnswerText;
-            btn.onclick = () => selectAnswer(ans.IsCorrect, btn, shuffledAnswers);
-            answersDiv.appendChild(btn);
+            btn.onclick = () => {
+                if (!isPaused && !isGameOver) {
+                    selectAnswer(ans.IsCorrect, btn, shuffledAnswers);
+                }
+            };
+            if (answersDiv) answersDiv.appendChild(btn);
         });
 
         saveGameState();
     }
 
     function startTimer() {
+        if (isGameOver || isPaused) return;
         playSound(soundTick);
 
         timer = setInterval(() => {
+            if (isGameOver || isPaused) return;
+
             timeLeft--;
             updateTimerDisplay();
             saveGameState();
@@ -138,6 +162,9 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateTimerDisplay() {
         const badge = document.getElementById('timer-badge');
         const text = document.getElementById('timer-text');
+        
+        if (!text || !badge) return;
+
         text.innerText = `${timeLeft}s`;
         
         if (timeLeft <= 10) {
@@ -148,29 +175,72 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function selectAnswer(isCorrect, selectedBtn, allAnswers) {
+        if (isGameOver || isPaused) return;
         clearInterval(timer);
         stopSound(soundTick);
 
         const feedback = document.getElementById('feedback-container');
-        const buttons = document.getElementById('answers-container').getElementsByTagName('button');
+        const answersContainer = document.getElementById('answers-container');
         
-        for (let b of buttons) b.disabled = true;
+        if (answersContainer) {
+            const buttons = answersContainer.getElementsByTagName('button');
+            for (let b of buttons) b.disabled = true;
+        }
 
-        if (isCorrect) {
-            selectedBtn.classList.add('answer-correct');
-            feedback.innerText = '✨ ¡Respuesta Correcta!';
-            feedback.className = 'mt-3 text-center fw-bold fs-5 text-success animate-fade-in';
-            score += 10;
-            correctCount++;
-            playSound(soundCorrect);
-        } else {
-            selectedBtn.classList.add('answer-incorrect');
-            feedback.innerText = '❌ Respuesta Incorrecta';
-            feedback.className = 'mt-3 text-center fw-bold fs-5 text-danger animate-fade-in';
-            playSound(soundIncorrect);
+        if (feedback) {
+            if (isCorrect) {
+                selectedBtn.classList.add('answer-correct');
+                feedback.innerText = '✨ ¡Respuesta Correcta!';
+                feedback.className = 'mt-3 text-center fw-bold fs-5 text-success animate-fade-in';
+                score += 10;
+                correctCount++;
+                playSound(soundCorrect);
+            } else {
+                selectedBtn.classList.add('answer-incorrect');
+                feedback.innerText = '❌ Respuesta Incorrecta';
+                feedback.className = 'mt-3 text-center fw-bold fs-5 text-danger animate-fade-in';
+                playSound(soundIncorrect);
 
+                if (answersContainer) {
+                    const buttons = answersContainer.getElementsByTagName('button');
+                    for (let i = 0; i < buttons.length; i++) {
+                        if (allAnswers[i].IsCorrect) {
+                            buttons[i].classList.add('answer-correct');
+                        }
+                    }
+                }
+            }
+        }
+
+        currentIndex++;
+        saveGameState();
+
+        setTimeout(() => {
+            if (!isPaused) {
+                showQuestion(true);
+            }
+        }, 1600);
+    }
+
+    function handleTimeOut() {
+        if (isGameOver || isPaused) return;
+        stopSound(soundTick);
+        playSound(soundIncorrect);
+        
+        const feedback = document.getElementById('feedback-container');
+        if (feedback) {
+            feedback.innerText = '⏰ ¡Se acabó el tiempo!';
+            feedback.className = 'mt-3 text-center fw-bold fs-5 text-warning animate-fade-in';
+        }
+
+        const answersContainer = document.getElementById('answers-container');
+        const q = questions[currentIndex];
+        
+        if (answersContainer && q) {
+            const buttons = answersContainer.getElementsByTagName('button');
             for (let i = 0; i < buttons.length; i++) {
-                if (allAnswers[i].IsCorrect) {
+                buttons[i].disabled = true;
+                if (q.Answers[i].IsCorrect) {
                     buttons[i].classList.add('answer-correct');
                 }
             }
@@ -180,49 +250,33 @@ document.addEventListener("DOMContentLoaded", function () {
         saveGameState();
 
         setTimeout(() => {
-            showQuestion(true);
-        }, 1600);
-    }
-
-    function handleTimeOut() {
-        stopSound(soundTick);
-        playSound(soundIncorrect);
-        
-        const feedback = document.getElementById('feedback-container');
-        feedback.innerText = '⏰ ¡Se acabó el tiempo!';
-        feedback.className = 'mt-3 text-center fw-bold fs-5 text-warning animate-fade-in';
-
-        const buttons = document.getElementById('answers-container').getElementsByTagName('button');
-        const q = questions[currentIndex];
-        
-        for (let i = 0; i < buttons.length; i++) {
-            buttons[i].disabled = true;
-            if (q.Answers[i].IsCorrect) {
-                buttons[i].classList.add('answer-correct');
+            if (!isPaused) {
+                showQuestion(true);
             }
-        }
-
-        currentIndex++;
-        saveGameState();
-
-        setTimeout(() => {
-            showQuestion(true);
         }, 1600);
     }
 
     function endGame() {
+        isGameOver = true;
+        clearInterval(timer);
         stopSound(soundTick);
         sessionStorage.removeItem(storageKey);
 
-        document.getElementById('question-container').classList.add('d-none');
-        document.getElementById('timer-badge').classList.add('d-none');
-        document.getElementById('question-counter').classList.add('d-none');
-        document.getElementById('feedback-container').classList.add('d-none');
+        const qContainer = document.getElementById('question-container');
+        const timerBadge = document.getElementById('timer-badge');
+        const qCounter = document.getElementById('question-counter');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const finalScore = document.getElementById('final-score');
+        const resultContainer = document.getElementById('result-container');
 
-        document.getElementById('final-score').innerText = score;
-        document.getElementById('result-container').classList.remove('d-none');
+        if (qContainer) qContainer.classList.add('d-none');
+        if (timerBadge) timerBadge.classList.add('d-none');
+        if (qCounter) qCounter.classList.add('d-none');
+        if (feedbackContainer) feedbackContainer.classList.add('d-none');
 
-        // Petición AJAX que ahora sí se enviará con éxito a la base de datos
+        if (finalScore) finalScore.innerText = score;
+        if (resultContainer) resultContainer.classList.remove('d-none');
+
         fetch('/Trivia/SaveResult', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -236,6 +290,23 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(data => console.log("Puntaje guardado con éxito en el ranking:", data))
         .catch(err => console.error("Error al guardar puntuación:", err));
     }
+
+    // Exponer métodos globales para controlar la pausa desde la vista
+    window.triviaGame = {
+        pause: function() {
+            if (isGameOver) return;
+            isPaused = true;
+            clearInterval(timer);
+            stopSound(soundTick); // Pausa el sonido de tictac del reloj
+            console.log("Juego pausado por advertencia.");
+        },
+        resume: function() {
+            if (isGameOver || !isPaused) return;
+            isPaused = false;
+            startTimer(); // Reanuda el tictac y la cuenta regresiva desde donde se quedó
+            console.log("Juego reanudado.");
+        }
+    };
 
     initGame();
 });

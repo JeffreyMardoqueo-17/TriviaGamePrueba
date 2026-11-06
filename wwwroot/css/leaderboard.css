@@ -3,8 +3,14 @@ body {
 }
 
 .leaderboard-main-card {
-    border-radius: 2rem !important;
+    border-radius: 1.5rem !important;
     box-shadow: 0 1rem 3rem rgba(15, 23, 42, 0.05) !important;
+}
+
+@media (min-width: 768px) {
+    .leaderboard-main-card {
+        border-radius: 2rem !important;
+    }
 }
 
 .podium-card {
@@ -22,12 +28,18 @@ body {
 .podium-first {
     background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
     border: 2px solid #f59e0b !important;
-    transform: translateY(-8px);
     box-shadow: 0 1rem 2.5rem rgba(245, 158, 11, 0.12);
 }
 
-.podium-first:hover {
-    transform: translateY(-12px);
+/* Aplicar desplazamiento vertical solo en pantallas medianas o grandes */
+@media (min-width: 768px) {
+    .podium-first {
+        transform: translateY(-8px);
+    }
+
+    .podium-first:hover {
+        transform: translateY(-12px);
+    }
 }
 
 .podium-badge {
@@ -48,12 +60,14 @@ body {
 
 .table-container-fluid {
     width: 100%;
-    overflow-x: visible; 
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .custom-table {
     border-collapse: separate;
     border-spacing: 0 0.75rem;
+    min-width: 600px; /* Asegura que la tabla no colapse feo en pantallas delgadas */
 }
 
 .custom-table thead th {
@@ -64,6 +78,7 @@ body {
     letter-spacing: 1px;
     padding: 1.1rem 1rem;
     border: none;
+    white-space: nowrap;
 }
 
 .custom-table thead th:first-child {
@@ -83,12 +98,12 @@ body {
 
 .custom-table tbody tr.table-row-item:hover {
     background-color: #f1f5f9;
-    transform: scale(1.005);
 }
 
 .custom-table tbody td {
     padding: 1.1rem 1rem;
     border: none;
+    white-space: nowrap;
 }
 
 .custom-table tbody td:first-child {
@@ -107,7 +122,6 @@ body {
     letter-spacing: 0.5px;
     transition: all 0.2s ease;
     border-radius: 50rem !important;
-    padding: 0.8rem 2.5rem !important;
 }
 
 .btn-back:hover {

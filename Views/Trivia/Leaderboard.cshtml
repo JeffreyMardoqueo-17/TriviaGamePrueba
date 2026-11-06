@@ -10,39 +10,25 @@
 
 <link rel="stylesheet" href="~/css/leaderboard.css" asp-append-version="true" />
 
-<div class="container-fluid px-4 px-lg-5 py-5">
-    <div class="row justify-content-center">
-        <div class="col-12 col-xl-11">
-            <div class="card leaderboard-main-card border-0 p-4 p-md-5 bg-white">
-                <div class="text-center mb-5">
-                    <h2 class="fw-extrabold text-dark tracking-tight mb-2 display-5">🏆 Tablero de Posiciones</h2>
-                    <p class="text-muted fs-5">Ranking de usuarios con mayor puntaje acumulado en la plataforma.</p>
+<div class="container-fluid px-2 px-sm-3 px-lg-5 py-4 py-md-5">
+    <div class="row justify-content-center m-0">
+        <div class="col-12 col-xl-11 px-0 px-md-3">
+            <div class="card leaderboard-main-card border-0 p-3 p-md-5 bg-white">
+                <div class="text-center mb-4 mb-md-5">
+                    <h2 class="fw-extrabold text-dark tracking-tight mb-2 display-6 display-md-5">🏆 Tablero de Posiciones</h2>
+                    <p class="text-muted fs-6 fs-md-5">Ranking de usuarios con mayor puntaje acumulado en la plataforma.</p>
                 </div>
 
-               @* top 3 *@
+                @* top 3 *@
                 @if (leaderboardList.Any())
                 {
-                    <div class="row justify-content-center align-items-end g-4 mb-5">
-                        <!-- 2do Lugar (Izquierda) -->
-                        <div class="col-12 col-md-4 order-md-1 order-2">
-                            @if (top2 != null)
-                            {
-                                <div class="podium-card card border-0 p-4 text-center">
-                                    <div class="podium-badge bg-light text-secondary mx-auto mb-3 shadow-sm">
-                                        🥈
-                                    </div>
-                                    <h5 class="fw-bold text-dark text-truncate mb-1">@top2.Username</h5>
-                                    <span class="text-success fw-extrabold fs-5">@top2.TotalPoints pts</span>
-                                    <div class="text-muted small mt-2">@top2.GamesPlayed partidas • @top2.CorrectAnswers aciertos</div>
-                                </div>
-                            }
-                        </div>
-                        @* 1 *@
-                        <div class="col-12 col-md-4 order-md-2 order-1">
+                    <div class="row justify-content-center align-items-end g-3 g-md-4 mb-4 mb-md-5">
+                        <!-- 1er Lugar (Móvil: Primero / Escritorio: Centro) -->
+                        <div class="col-12 col-md-4 order-1 order-md-2 mb-3 mb-md-0">
                             @if (top1 != null)
                             {
-                                <div class="podium-card podium-first card border-0 p-4 text-center">
-                                    <div class="podium-badge podium-badge-first bg-warning text-white mx-auto mb-3 shadow">
+                                <div class="podium-card podium-first card border-0 p-3 p-md-4 text-center">
+                                    <div class="podium-badge podium-badge-first bg-warning text-white mx-auto mb-2 mb-md-3 shadow">
                                         👑
                                     </div>
                                     <h4 class="fw-bold text-dark text-truncate mb-1">@top1.Username</h4>
@@ -52,12 +38,27 @@
                             }
                         </div>
 
-                        @*  3 *@
-                        <div class="col-12 col-md-4 order-md-3 order-3">
+                        <!-- 2do Lugar (Móvil: Segundo / Escritorio: Izquierda) -->
+                        <div class="col-12 col-md-4 order-2 order-md-1 mb-3 mb-md-0">
+                            @if (top2 != null)
+                            {
+                                <div class="podium-card card border-0 p-3 p-md-4 text-center">
+                                    <div class="podium-badge bg-light text-secondary mx-auto mb-2 mb-md-3 shadow-sm">
+                                        🥈
+                                    </div>
+                                    <h5 class="fw-bold text-dark text-truncate mb-1">@top2.Username</h5>
+                                    <span class="text-success fw-extrabold fs-5">@top2.TotalPoints pts</span>
+                                    <div class="text-muted small mt-2">@top2.GamesPlayed partidas • @top2.CorrectAnswers aciertos</div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- 3er Lugar (Móvil: Tercero / Escritorio: Derecha) -->
+                        <div class="col-12 col-md-4 order-3 order-md-3 mb-3 mb-md-0">
                             @if (top3 != null)
                             {
-                                <div class="podium-card card border-0 p-4 text-center">
-                                    <div class="podium-badge bg-light text-warning mx-auto mb-3 shadow-sm">
+                                <div class="podium-card card border-0 p-3 p-md-4 text-center">
+                                    <div class="podium-badge bg-light text-warning mx-auto mb-2 mb-md-3 shadow-sm">
                                         🥉
                                     </div>
                                     <h5 class="fw-bold text-dark text-truncate mb-1">@top3.Username</h5>
@@ -69,14 +70,14 @@
                     </div>
                 }
 
-                @* tabla de posiciones *@
-                <div class="table-container-fluid w-100 mb-4">
+                @* Tabla de posiciones responsive *@
+                <div class="table-container-fluid w-100 mb-4 table-responsive">
                     <table class="table align-middle text-center custom-table w-100">
                         <thead>
                             <tr>
-                                <th class="text-start ps-4 py-3">POSICIÓN</th>
+                                <th class="text-start ps-3 ps-md-4 py-3">POSICIÓN</th>
                                 <th class="text-start py-3">USUARIO</th>
-                                <th class="py-3">PUNTOS TOTALES</th>
+                                <th class="py-3">PUNTOS</th>
                                 <th class="py-3">PARTIDAS</th>
                                 <th class="py-3">ACIERTOS</th>
                             </tr>
@@ -87,16 +88,16 @@
                                 @foreach (var entry in leaderboardList)
                                 {
                                     <tr class="table-row-item">
-                                        <td class="text-start ps-4 fw-bold fs-6">
+                                        <td class="text-start ps-3 ps-md-4 fw-bold fs-6 text-nowrap">
                                             @if (entry.RankPosition == 1) { <span class="badge bg-warning-subtle text-warning-emphasis px-3 py-2 rounded-pill fw-bold">🥇 1</span> }
                                             else if (entry.RankPosition == 2) { <span class="badge bg-secondary-subtle text-secondary-emphasis px-3 py-2 rounded-pill fw-bold">🥈 2</span> }
                                             else if (entry.RankPosition == 3) { <span class="badge bg-warning-subtle text-warning-emphasis px-3 py-2 rounded-pill fw-bold" style="background-color: #faedcd !important; color: #b45309 !important;">🥉 3</span> }
                                             else { <span class="text-muted ps-2">#@entry.RankPosition</span> }
                                         </td>
-                                        <td class="text-start fw-bold text-dark fs-6">@entry.Username</td>
-                                        <td class="text-success fw-extrabold fs-6">@entry.TotalPoints pts</td>
-                                        <td class="text-secondary fw-semibold">@entry.GamesPlayed</td>
-                                        <td class="text-secondary fw-semibold">@entry.CorrectAnswers</td>
+                                        <td class="text-start fw-bold text-dark fs-6 text-nowrap">@entry.Username</td>
+                                        <td class="text-success fw-extrabold fs-6 text-nowrap">@entry.TotalPoints pts</td>
+                                        <td class="text-secondary fw-semibold text-nowrap">@entry.GamesPlayed</td>
+                                        <td class="text-secondary fw-semibold text-nowrap">@entry.CorrectAnswers</td>
                                     </tr>
                                 }
                             }
@@ -111,7 +112,7 @@
                 </div>
 
                 <div class="text-center mt-3">
-                    <a href="@Url.Action("Index", "Trivia")" class="btn btn-dark rounded-pill px-5 py-3 fw-bold shadow-sm btn-back text-uppercase">
+                    <a href="@Url.Action("Index", "Trivia")" class="btn btn-dark rounded-pill px-4 px-md-5 py-3 fw-bold shadow-sm btn-back text-uppercase">
                         Volver al Menú
                     </a>
                 </div>

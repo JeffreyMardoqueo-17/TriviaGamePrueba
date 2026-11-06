@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TriviaPruebaTecnica")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7073fef8f53aa2bfd05b79a9f836face24e6529a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ff70b3e3b771123c43d027aa7f920f6cc349eee7")]
 [assembly: System.Reflection.AssemblyProductAttribute("TriviaPruebaTecnica")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TriviaPruebaTecnica")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

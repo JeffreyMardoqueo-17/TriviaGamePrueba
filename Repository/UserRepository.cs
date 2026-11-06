@@ -9,7 +9,7 @@ using System.Data;
 
 namespace TriviaPruebaTecnica.Repository
 {
-   public class UserRepository : IUserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly IDbConnection _dbConnection;
 
@@ -62,6 +62,19 @@ namespace TriviaPruebaTecnica.Repository
             );
 
             return exists;
+        }
+        public async Task<int> GetUserTotalPointsAsync(int userId)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@UserId", userId);
+
+            var result = await _dbConnection.ExecuteScalarAsync<int?>(
+                "sp_GetUserTotalPoints",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            return result ?? 0;
         }
     }
 }

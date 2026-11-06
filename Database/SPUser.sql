@@ -80,6 +80,16 @@ BEGIN
 END;
 GO
 
+CREATE OR ALTER PROCEDURE sp_GetUserTotalPoints
+    @UserId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT ISNULL((SELECT TotalPoints FROM UserScores WHERE UserId = @UserId), 0) AS TotalPoints;
+END;
+GO
+
 --PRUEBA
 DECLARE @TestUsername NVARCHAR (50) = 'jeffreymardoqueo';
 DECLARE @TestPasswordHash NVARCHAR (255) = '$2a$12$OEkq3tNbB0UAFvmwol1VVuMJqS3ObjT0qdAWKgS4F6oWOIxDeOOAq'; --1234prueba

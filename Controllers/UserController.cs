@@ -33,24 +33,30 @@ namespace TriviaPruebaTecnica.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(string regUsername, string regPassword)
         {
-            var (success, message) = await _userService.RegisterAsync(regUsername, regPassword);
+            // Llamamos al servicio que valida si el usuario existe
+            var result = await _userService.RegisterAsync(regUsername, regPassword);
 
-            if (!success)
+            if (!result.Success)
             {
-                TempData["RegisterError"] = message;
-                return RedirectToAction(nameof(Index));
+                // Guardamos el mensaje exacto que viene del servicio ("El nombre de usuario ya está registrado...")
+                TempData["RegisterError"] = result.Message;
+
+                // Marcamos la pestaña activa para que la vista abra automáticamente el formulario de registro
+                TempData["ActiveTab"] = "register";
+
+                return RedirectToAction("Index");
             }
 
-            TempData["SuccessMessage"] = message;
-            return RedirectToAction(nameof(Index));
+            TempData["SuccessMessage"] = result.Message; // "Usuario registrado exitosamente."
+            TempData["ActiveTab"] = "login";
+            return RedirectToAction("Index");
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string loginUsername, string loginPassword)
         {
-            // Toda la lógica de autenticación y verificación reside en el servicio
-            var (success, message, user) = await _userService.AuthenticateAsync(loginUsername, loginPassword);
+            // Recibimos los 4 valores devueltos por el servicio actualizado
+            var (success, message, user, totalPoints) = await _userService.AuthenticateAsync(loginUsername, loginPassword);
 
             if (!success || user == null)
             {
@@ -58,10 +64,12 @@ namespace TriviaPruebaTecnica.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            // Creamos las claims incluyendo los puntos totales para mostrarlos en el Navbar
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim("TotalPoints", totalPoints.ToString()) // <-- Claim indispensable para el Navbar
             };
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -75,7 +83,7 @@ namespace TriviaPruebaTecnica.Controllers
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
 
-            _logger.LogInformation("Usuario {Username} inició sesión correctamente.", user.Username);
+            _logger.LogInformation("Usuario {Username} inició sesión correctamente con {Points} puntos.", user.Username, totalPoints);
 
             return RedirectToAction("Index", "Trivia");
         }

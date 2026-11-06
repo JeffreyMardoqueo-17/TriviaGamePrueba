@@ -1,68 +1,48 @@
-﻿/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-for details on configuring this project to bundle and minify static web assets. */
-
-a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+﻿/* --- CONFIGURACIÓN BASE Y FOOTER ESTÁTICO --- */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #f8fafc;
+    color: #0f172a;
 }
 
-a {
-  color: #0077cc;
+body {
+    display: flex;
+    flex-direction: column;
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
-}
-
-.border-top {
-  border-top: 1px solid #e5e5e5;
-}
-.border-bottom {
-  border-bottom: 1px solid #e5e5e5;
-}
-
-.box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
-}
-
-button.accept-policy {
-  font-size: 1rem;
-  line-height: inherit;
+.content-area {
+    flex: 1 0 auto;
 }
 
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
-}
-.nav-pill-container {
-    background-color: #f8f9fa;
-    border-color: #e9ecef !important;
+    flex-shrink: 0;
+    width: 100%;
+    background-color: #ffffff;
+    border-top: 1px solid #e2e8f0;
 }
 
-.nav-pill-container .nav-link {
-    transition: all 0.2s ease-in-out;
-    border-radius: 50rem;
-}
-.nav-pill-container .nav-link:hover {
-    color: #0d6efd !important;
-    background-color: rgba(13, 110, 253, 0.05);
+/* --- RESPONSIVE OFFCANVAS MÓVIL (50% Ancho, Altura Completa, Blur) --- */
+@media (max-width: 991.98px) {
+    .mobile-arcade-offcanvas {
+        width: 50% !important;
+        min-width: 270px;
+        height: 100vh !important;
+        border-radius: 0 !important;
+        box-shadow: -15px 0 40px rgba(0, 0, 0, 0.2) !important;
+    }
 }
 
-.nav-pill-container .nav-link.active-tab {
-    background-color: #ffffff !important;
-    color: #0d6efd !important;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e2e8f0;
-}
+.offcanvas-backdrop.show {
+    opacity: 0.5 !important;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}   

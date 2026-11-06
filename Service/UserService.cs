@@ -1,4 +1,3 @@
-
 using TriviaPruebaTecnica.Models;
 using TriviaPruebaTecnica.Repository.Interfaces;
 using TriviaPruebaTecnica.Service;
@@ -24,7 +23,6 @@ namespace TriviaPruebaTecnica.Services
 
         public async Task<(bool Success, string Message)> RegisterAsync(string username, string password)
         {
-            // 1. Validaciones defensivas de entrada
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
                 return (false, "El nombre de usuario y la contraseña no pueden estar vacíos.");
 
@@ -46,7 +44,6 @@ namespace TriviaPruebaTecnica.Services
                 }
 
                 string passwordHash = _passwordHasher.HashPassword(password);
-
                 await _userRepository.RegisterAsync(cleanUsername, passwordHash);
 
                 _logger.LogInformation("Usuario '{Username}' registrado exitosamente.", cleanUsername);
@@ -54,16 +51,28 @@ namespace TriviaPruebaTecnica.Services
             }
             catch (Exception ex)
             {
+                // Capturamos si la base de datos arroja un error de llave duplicada (SQL Server Error 2627 o 2601)
+                if (ex.Message.Contains("Violation of PRIMARY KEY") ||
+                    ex.Message.Contains("duplicate key") ||
+                    ex.Message.Contains("IX_") ||
+                    (ex is Microsoft.Data.SqlClient.SqlException sqlEx && (sqlEx.Number == 2627 || sqlEx.Number == 2601)))
+                {
+                    _logger.LogWarning("Intento de registro fallido por restricción de BD: El usuario '{Username}' ya existe.", cleanUsername);
+                    return (false, "El nombre de usuario ya está registrado. Por favor, elige otro.");
+                }
+
+                // Si es cualquier otro error real de servidor o conexión
                 _logger.LogError(ex, "Error crítico al registrar al usuario '{Username}'.", cleanUsername);
                 return (false, "Ocurrió un error interno al procesar el registro. Inténtalo más tarde.");
             }
         }
-        public async Task<(bool Success, string Message, User? User)> AuthenticateAsync(string username, string password)
+
+        // Actualizamos la tupla para retornar también los puntos totales (TotalPoints)
+        public async Task<(bool Success, string Message, User? User, int TotalPoints)> AuthenticateAsync(string username, string password)
         {
-            // 1. Validaciones defensivas de entrada
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
-                return (false, "Debe ingresar usuario y contraseña.", null);
+                return (false, "Debe ingresar usuario y contraseña.", null, 0);
             }
 
             var cleanUsername = username.Trim();
@@ -74,9 +83,8 @@ namespace TriviaPruebaTecnica.Services
 
                 if (user == null || string.IsNullOrEmpty(user.PasswordHash))
                 {
-                    // Mensaje genérico para prevenir enumeración de usuarios (Seguridad OWASP)
                     _logger.LogWarning("Intento de autenticación fallido: Usuario no encontrado '{Username}'.", cleanUsername);
-                    return (false, "Credenciales inválidas.", null);
+                    return (false, "Credenciales inválidas.", null, 0);
                 }
 
                 bool isValidPassword = _passwordHasher.VerifyPassword(password, user.PasswordHash);
@@ -84,16 +92,19 @@ namespace TriviaPruebaTecnica.Services
                 if (!isValidPassword)
                 {
                     _logger.LogWarning("Intento de autenticación fallido: Contraseña incorrecta para el usuario '{Username}'.", cleanUsername);
-                    return (false, "Credenciales inválidas.", null);
+                    return (false, "Credenciales inválidas.", null, 0);
                 }
 
-                _logger.LogInformation("Usuario '{Username}' autenticado exitosamente.", cleanUsername);
-                return (true, "Autenticación exitosa.", user);
+                // Consultamos los puntos acumulados del usuario
+                int totalPoints = await _userRepository.GetUserTotalPointsAsync(user.Id);
+
+                _logger.LogInformation("Usuario '{Username}' autenticado exitosamente con {Points} puntos.", cleanUsername, totalPoints);
+                return (true, "Autenticación exitosa.", user, totalPoints);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error crítico durante la autenticación del usuario '{Username}'.", cleanUsername);
-                return (false, "Ocurrió un error interno al procesar la autenticación.", null);
+                return (false, "Ocurrió un error interno al procesar la autenticación.", null, 0);
             }
         }
     }
