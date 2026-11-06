@@ -3,6 +3,8 @@
 Aplicación web de trivia desarrollada en C# con .NET 8 como parte de una prueba técnica para BAC Credomatic.
 
 El proyecto permite a los usuarios registrarse, iniciar sesión, jugar en diferentes categorías y consultar tablas de ranking.
+<img width="3630" height="1612" alt="image" src="https://github.com/user-attachments/assets/1ddd2069-17c2-45d0-9180-a4629870d0a8" />
+
 
 ## Demo
 
