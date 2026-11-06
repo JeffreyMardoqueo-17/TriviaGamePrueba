@@ -25,12 +25,14 @@
                             <div class="card-body d-flex flex-column justify-content-between text-center p-3">
                                 <div>
                                     <!-- Contenedor del ícono -->
-                                    <div class="icon-box mx-auto mb-4 rounded-4 d-flex align-items-center justify-content-center shadow-sm">
+                                    <div
+                                        class="icon-box mx-auto mb-4 rounded-4 d-flex align-items-center justify-content-center shadow-sm">
                                         @if (category.Name.Contains("Animales", StringComparison.OrdinalIgnoreCase))
                                         {
                                             <span class="fs-2">🐾</span>
                                         }
-                                        else if (category.Name.Contains("Carros", StringComparison.OrdinalIgnoreCase) || category.Name.Contains("Vehículos", StringComparison.OrdinalIgnoreCase))
+                                        else if (category.Name.Contains("Carros", StringComparison.OrdinalIgnoreCase) ||
+                                    category.Name.Contains("Vehículos", StringComparison.OrdinalIgnoreCase))
                                         {
                                             <span class="fs-2">🚗</span>
                                         }
@@ -40,11 +42,12 @@
                                         }
                                     </div>
 
-                                    <h4 class="card-title fw-bold text-primary mb-3">@category.Name</h4>
+                                    <h4 class="card-title fw-bold text-dark mb-3">@category.Name</h4>
                                     <p class="card-text text-muted small px-2 mb-4">@category.Description</p>
                                 </div>
 
-                                <a asp-action="Play" asp-route-categoryId="@category.Id" class="btn btn-dark w-100 py-3 rounded-pill fw-semibold shadow-sm text-uppercase tracking-wider btn-play">
+                                <a asp-action="Play" asp-route-categoryId="@category.Id"
+                                   class="btn btn-dark w-100 py-3 rounded-pill fw-semibold shadow-sm text-uppercase tracking-wider btn-play">
                                     Jugar Ahora
                                 </a>
                             </div>

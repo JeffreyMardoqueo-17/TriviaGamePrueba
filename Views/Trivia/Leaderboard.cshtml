@@ -13,7 +13,7 @@
 <div class="container-fluid px-2 px-sm-3 px-lg-5 py-4 py-md-5">
     <div class="row justify-content-center m-0">
         <div class="col-12 col-xl-11 px-0 px-md-3">
-            <div class="card leaderboard-main-card border-0 p-3 p-md-5 bg-white">
+            <div class="card  leaderboard-main-card border-0 p-3 p-md-5 bg-white">
                 <div class="text-center mb-4 mb-md-5">
                     <h2 class="fw-extrabold text-dark tracking-tight mb-2 display-6 display-md-5">🏆 Tablero de Posiciones</h2>
                     <p class="text-muted fs-6 fs-md-5">Ranking de usuarios con mayor puntaje acumulado en la plataforma.</p>
@@ -23,7 +23,7 @@
                 @if (leaderboardList.Any())
                 {
                     <div class="row justify-content-center align-items-end g-3 g-md-4 mb-4 mb-md-5">
-                        <!-- 1er Lugar (Móvil: Primero / Escritorio: Centro) -->
+                      
                         <div class="col-12 col-md-4 order-1 order-md-2 mb-3 mb-md-0">
                             @if (top1 != null)
                             {
@@ -38,7 +38,7 @@
                             }
                         </div>
 
-                        <!-- 2do Lugar (Móvil: Segundo / Escritorio: Izquierda) -->
+                      
                         <div class="col-12 col-md-4 order-2 order-md-1 mb-3 mb-md-0">
                             @if (top2 != null)
                             {
@@ -52,8 +52,6 @@
                                 </div>
                             }
                         </div>
-
-                        <!-- 3er Lugar (Móvil: Tercero / Escritorio: Derecha) -->
                         <div class="col-12 col-md-4 order-3 order-md-3 mb-3 mb-md-0">
                             @if (top3 != null)
                             {
@@ -69,8 +67,6 @@
                         </div>
                     </div>
                 }
-
-                @* Tabla de posiciones responsive *@
                 <div class="table-container-fluid w-100 mb-4 table-responsive">
                     <table class="table align-middle text-center custom-table w-100">
                         <thead>
