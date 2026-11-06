@@ -17,9 +17,11 @@
                 <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
                     <div class="d-flex align-items-center gap-2">
                        
-                        <span id="question-counter" class="fw-bold text-secondary fs-6 text-uppercase tracking-wider">Pregunta 1 de 3</span>
+                        <span id="question-counter"
+                              class="fw-bold text-secondary fs-6 text-uppercase tracking-wider">Pregunta 1 de 3</span>
                     </div>
-                    <div id="timer-badge" class="timer-pill d-flex align-items-center gap-2 px-3 py-2 rounded-pill fw-bold text-danger bg-danger-subtle">
+                    <div id="timer-badge"
+                         class="timer-pill d-flex align-items-center gap-2 px-3 py-2 rounded-pill fw-bold text-danger bg-danger-subtle">
                         ⏳ <span id="timer-text">30s</span>
                     </div>
                 </div>
@@ -42,7 +44,8 @@
                     </div>
 
                     <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
-                        <a href="@Url.Action("Index", "Trivia")" class="btn btn-dark btn-play-action rounded-pill px-4 py-3 fw-bold">Volver</a>
+                        <a href="@Url.Action("Index", "Trivia")"
+                           class="btn btn-dark btn-play-action rounded-pill px-4 py-3 fw-bold">Volver</a>
                     </div>
                 </div>
 
@@ -51,7 +54,8 @@
     </div>
 </div>
 
-<div class="modal fade" id="leaveGameModal" tabindex="-1" aria-labelledby="leaveGameModalLabel" aria-hidden="true" data-bs-backdrop="static">
+<div class="modal fade" id="leaveGameModal" tabindex="-1" aria-labelledby="leaveGameModalLabel" aria-hidden="true"
+     data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg rounded-4 p-3">
             <div class="modal-header border-0 pb-0">
@@ -60,15 +64,18 @@
                 </h5>
             </div>
             <div class="modal-body text-muted py-3">
-                Si sales ahora, perderás el progreso actual de tu juego en curso. Te recomendamos terminar las preguntas.
+                Si sales ahora, perderás el progreso actual de tu juego en curso. Te recomendamos terminar las
+                preguntas.
             </div>
             <div class="modal-footer border-0 pt-0 d-flex gap-2">
                 
-                <button type="button" class="btn btn-primary rounded-pill px-4 py-2 fw-bold flex-grow-1 shadow-sm" data-bs-dismiss="modal">
+                <button type="button" class="btn btn-primary rounded-pill px-4 py-2 fw-bold flex-grow-1 shadow-sm"
+                        data-bs-dismiss="modal">
                     🎮 Continuar Jugando
                 </button>
               
-                <button type="button" id="confirm-leave-btn" class="btn btn-outline-danger rounded-pill px-4 py-2 fw-bold">
+                <button type="button" id="confirm-leave-btn"
+                        class="btn btn-outline-danger rounded-pill px-4 py-2 fw-bold">
                     Sí, finalizar juego
                 </button>
             </div>
@@ -81,96 +88,4 @@
         window.triviaCategoryId = @categoryId;
     </script>
     <script src="~/js/game.js" asp-append-version="true"></script>
-
-    <!-- Script de protección y pausa de partida 100% compatible con Móvil y Escritorio -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            let targetUrl = "";
-            const leaveModalElement = document.getElementById('leaveGameModal');
-            
-            if (!leaveModalElement) return;
-            
-            const leaveModal = new bootstrap.Modal(leaveModalElement);
-            const confirmLeaveBtn = document.getElementById('confirm-leave-btn');
-            const continueGameBtn = leaveModalElement.querySelector('[data-bs-dismiss="modal"]');
-
-            function isGameActive() {
-                const resultContainer = document.getElementById('result-container');
-                return resultContainer && resultContainer.classList.contains('d-none');
-            }
-
-            // Función centralizada para manejar el intento de salida (compatible con PC y Celular)
-            function handlePotentialExit(e, link) {
-                if (!isGameActive()) return;
-
-                // Permitir botones internos del juego o clics dentro del menú móvil sin disparar advertencia
-                if (link.closest('#answers-container') || link.classList.contains('game-internal-btn') || link.closest('#mobileNavbarOffcanvas')) {
-                    return;
-                }
-
-                let href = null;
-                let isFormButton = false;
-                let formTarget = null;
-
-                if (link.tagName === 'A' && link.getAttribute('href')) {
-                    href = link.getAttribute('href');
-                } else if (link.tagName === 'BUTTON' && link.closest('form')) {
-                    isFormButton = true;
-                    formTarget = link.closest('form');
-                }
-
-                if ((href && href !== '#' && !href.startsWith('javascript')) || isFormButton) {
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    if (isFormButton) {
-                        targetUrl = () => {
-                            sessionStorage.removeItem(`trivia_game_state_${window.triviaCategoryId || 1}`);
-                            formTarget.submit();
-                        };
-                    } else {
-                        targetUrl = href;
-                    }
-
-                    // PAUSAR EL JUEGO Y EL CRONÓMETRO INMEDIATAMENTE (Móvil y Escritorio)
-                    if (window.triviaGame && typeof window.triviaGame.pause === 'function') {
-                        window.triviaGame.pause();
-                    }
-
-                    // Forzar la apertura del modal en dispositivos móviles de forma segura
-                    leaveModal.show();
-                }
-            }
-
-            // Escuchar tanto clics de escritorio como toques en pantallas táctiles de celulares
-            document.addEventListener('click', function (e) {
-                const link = e.target.closest('a, button[type="submit"]');
-                if (link) {
-                    handlePotentialExit(e, link);
-                }
-            }, true); // Usar captura para adelantarnos a cualquier otro script móvil
-
-           
-            if (continueGameBtn) {
-                continueGameBtn.addEventListener('click', function () {
-                    if (window.triviaGame && typeof window.triviaGame.resume === 'function') {
-                        window.triviaGame.resume();
-                    }
-                });
-            }
-
-            
-            if (confirmLeaveBtn) {
-                confirmLeaveBtn.addEventListener('click', function () {
-                    leaveModal.hide();
-                    sessionStorage.removeItem(`trivia_game_state_${window.triviaCategoryId || 1}`);
-                    if (typeof targetUrl === 'function') {
-                        targetUrl();
-                    } else if (targetUrl) {
-                        window.location.href = targetUrl;
-                    }
-                });
-            }
-        });
-    </script>
 }

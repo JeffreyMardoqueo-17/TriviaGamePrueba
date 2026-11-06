@@ -31,7 +31,6 @@ namespace TriviaPruebaTecnica.Service
 
         public async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
-            // Protegido contra picos de 1000+ usuarios concurrentes mediante IMemoryCache local
             var categories = await _memoryCache.GetOrCreateAsync(CategoriesCacheKey, async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = CacheDuration;
@@ -46,7 +45,6 @@ namespace TriviaPruebaTecnica.Service
 
         public async Task<IEnumerable<Question>> GetGameQuestionsAsync(int categoryId)
         {
-            // Regla de negocio: Validar que la categoría sea válida
             if (categoryId <= 0)
             {
                 _logger.LogWarning("Intento de obtener preguntas con CategoryId inválido: {CategoryId}", categoryId);

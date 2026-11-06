@@ -1,4 +1,4 @@
-﻿/* --- CONFIGURACIÓN BASE Y FOOTER ESTÁTICO --- */
+﻿
 html, body {
     height: 100%;
     margin: 0;
@@ -30,7 +30,6 @@ body {
     border-top: 1px solid #e2e8f0;
 }
 
-/* --- RESPONSIVE OFFCANVAS MÓVIL (50% Ancho, Altura Completa, Blur) --- */
 @media (max-width: 991.98px) {
     .mobile-arcade-offcanvas {
         width: 50% !important;

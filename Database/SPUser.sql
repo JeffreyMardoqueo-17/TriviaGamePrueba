@@ -69,7 +69,6 @@ BEGIN
         RETURN;
     END
 
-    -- Retorna 1 si existe, 0 si no existe
     IF EXISTS (SELECT 1 FROM Users WHERE Username = @Username)
     BEGIN
         SELECT CAST(1 AS BIT) AS UserExists;

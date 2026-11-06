@@ -24,7 +24,6 @@ namespace TriviaPruebaTecnica.Repository
             parameters.Add("@Username", username);
             parameters.Add("@PasswordHash", passwordHash);
 
-            // Ejecuta sp_RegisterUser y retorna el ID generado (SCOPE_IDENTITY)
             var userId = await _dbConnection.ExecuteScalarAsync<int>(
                 "sp_RegisterUser",
                 parameters,
@@ -39,7 +38,6 @@ namespace TriviaPruebaTecnica.Repository
             var parameters = new DynamicParameters();
             parameters.Add("@Username", username);
 
-            // Ejecuta sp_LoginUser que valida y retorna el registro del usuario por su Username
             var user = await _dbConnection.QuerySingleOrDefaultAsync<User>(
                 "sp_LoginUser",
                 parameters,

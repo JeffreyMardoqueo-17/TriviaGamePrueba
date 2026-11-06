@@ -20,7 +20,6 @@ namespace TriviaPruebaTecnica.Repository
 
         public async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
-            // Dapper mapea directamente el SP al modelo Category de forma asíncrona y ultrarrápida
             return await _dbConnection.QueryAsync<Category>(
                 "sp_GetCategories", 
                 commandType: CommandType.StoredProcedure
@@ -29,7 +28,6 @@ namespace TriviaPruebaTecnica.Repository
 
         public async Task<IEnumerable<Question>> GetRandomQuestionsByCategoryAsync(int categoryId)
         {
-            // Consulta multple optimizada con Dapper (Preguntas y sus Opciones/Respuestas en un solo viaje a BD)
             using var multi = await _dbConnection.QueryMultipleAsync(
                 "sp_GetRandomQuestionsByCategory",
                 new { CategoryId = categoryId },

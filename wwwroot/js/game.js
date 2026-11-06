@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let timeLeft = 30;
     let isGameOver = false;
     let isPaused = false;
+    let targetUrl = "";
 
     // Efectos de sonido
     const soundCorrect = new Audio('/audio/correcto.wav');
@@ -110,7 +111,6 @@ document.addEventListener("DOMContentLoaded", function () {
         startTimer();
 
         const q = questions[currentIndex];
-        
         const counterEl = document.getElementById('question-counter');
         const textEl = document.getElementById('question-text');
         
@@ -291,22 +291,100 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(err => console.error("Error al guardar puntuación:", err));
     }
 
-    // Exponer métodos globales para controlar la pausa desde la vista
+    // Métodos globales de pausa y reanudación
     window.triviaGame = {
         pause: function() {
             if (isGameOver) return;
             isPaused = true;
             clearInterval(timer);
-            stopSound(soundTick); // Pausa el sonido de tictac del reloj
-            console.log("Juego pausado por advertencia.");
+            stopSound(soundTick);
         },
         resume: function() {
             if (isGameOver || !isPaused) return;
             isPaused = false;
-            startTimer(); // Reanuda el tictac y la cuenta regresiva desde donde se quedó
-            console.log("Juego reanudado.");
+            startTimer();
         }
     };
 
+    // --- Sistema de protección y pausa de partida (Móvil y Escritorio) ---
+    const leaveModalElement = document.getElementById('leaveGameModal');
+    if (leaveModalElement) {
+        const leaveModal = new bootstrap.Modal(leaveModalElement);
+        const confirmLeaveBtn = document.getElementById('confirm-leave-btn');
+        const continueGameBtn = leaveModalElement.querySelector('[data-bs-dismiss="modal"]');
+
+        function isGameActive() {
+            const resultContainer = document.getElementById('result-container');
+            return resultContainer && resultContainer.classList.contains('d-none');
+        }
+
+        function handlePotentialExit(e, link) {
+            if (!isGameActive()) return;
+
+            if (link.closest('#answers-container') || link.classList.contains('game-internal-btn') || link.closest('#mobileNavbarOffcanvas')) {
+                return;
+            }
+
+            let href = null;
+            let isFormButton = false;
+            let formTarget = null;
+
+            if (link.tagName === 'A' && link.getAttribute('href')) {
+                href = link.getAttribute('href');
+            } else if (link.tagName === 'BUTTON' && link.closest('form')) {
+                isFormButton = true;
+                formTarget = link.closest('form');
+            }
+
+            if ((href && href !== '#' && !href.startsWith('javascript')) || isFormButton) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (isFormButton) {
+                    targetUrl = () => {
+                        sessionStorage.removeItem(storageKey);
+                        formTarget.submit();
+                    };
+                } else {
+                    targetUrl = href;
+                }
+
+                if (window.triviaGame && typeof window.triviaGame.pause === 'function') {
+                    window.triviaGame.pause();
+                }
+
+                leaveModal.show();
+            }
+        }
+
+        document.addEventListener('click', function (e) {
+            const link = e.target.closest('a, button[type="submit"]');
+            if (link) {
+                handlePotentialExit(e, link);
+            }
+        }, true);
+
+        if (continueGameBtn) {
+            continueGameBtn.addEventListener('click', function () {
+                if (window.triviaGame && typeof window.triviaGame.resume === 'function') {
+                    window.triviaGame.resume();
+                }
+            });
+        }
+
+        if (confirmLeaveBtn) {
+            confirmLeaveBtn.addEventListener('click', function () {
+                leaveModal.hide();
+                sessionStorage.removeItem(storageKey);
+                if (typeof targetUrl === 'function') {
+                    targetUrl();
+                } else if (targetUrl) {
+                    window.location.href = targetUrl;
+                }
+            });
+        }
+    }
+
+    // Iniciar juego al cargar
     initGame();
 });

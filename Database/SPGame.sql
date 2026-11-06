@@ -1,4 +1,4 @@
--- 1. Traer Categorías
+
 CREATE OR ALTER PROCEDURE sp_GetCategories
 AS
 BEGIN
@@ -15,7 +15,6 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Validar si la categoría existe
     IF NOT EXISTS (SELECT 1 FROM Categories WHERE Id = @CategoryId)
     BEGIN
         RAISERROR('La categoría especificada no existe.', 16, 1);
